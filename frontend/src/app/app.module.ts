@@ -10,6 +10,7 @@ import { BoardComponent } from './board/board/board.component';
 import { ChatComponent } from './chat/chat.component';
 import { MenuComponent } from './main/menu/menu.component';
 import { ToastComponent } from './elements/toast/toast.component';
+import { FieldPipe } from './board/field.pipe';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ToastComponent } from './elements/toast/toast.component';
     BoardComponent,
     ChatComponent,
     MenuComponent,
-    ToastComponent
+    ToastComponent,
+    FieldPipe
   ],
   imports: [
     BrowserModule,
