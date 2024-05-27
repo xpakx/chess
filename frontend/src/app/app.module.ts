@@ -6,12 +6,20 @@ import { HttpClientModule } from "@angular/common/http";
 import { ModalLoginComponent } from './auth/modal-login/modal-login.component';
 import { ModalRegisterComponent } from './auth/modal-register/modal-register.component'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BoardComponent } from './board/board/board.component';
+import { ChatComponent } from './chat/chat.component';
+import { MenuComponent } from './main/menu/menu.component';
+import { ToastComponent } from './elements/toast/toast.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ModalLoginComponent,
-    ModalRegisterComponent
+    ModalRegisterComponent,
+    BoardComponent,
+    ChatComponent,
+    MenuComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,
