@@ -1,6 +1,15 @@
 <div class="chess-board">
     <div class="row" *ngFor="let row of board; index as i">
-        <div *ngFor="let cell of row; index as j" class="cell" [class]="cell | field" id="cell{{i}}{{j}}">
+        <div *ngFor="let cell of row; index as j" 
+        class="cell" class="{{cell | field}} {{classList[i][j]}}" 
+
+        [draggable]="cell != 'Empty'"
+        (dragstart)="onDragStart($event, i, j)"
+        (dragend)="onDragEnd($event, i, j)"
+        id="cell{{i}}{{j}}">
         </div>
     </div>
 </div>
+
+
+<div class="cell ghost" [class]="ghostClass" #ghost></div>

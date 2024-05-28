@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FieldPipe } from '../field.pipe';
 
 @Component({
   selector: 'app-board',
@@ -16,10 +17,29 @@ export class BoardComponent implements OnInit {
     ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
     ["WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn"],
     ["WhiteRook", "WhiteKnight", "WhiteBishop", "WhiteQueen", "WhiteKing", "WhiteBishop", "WhiteKnight", "WhiteRook"],
-  ]
-  constructor() { }
+  ];
+
+  classList: String[][] = Array(this.board.length).fill(null).map(() => Array(this.board.length).fill(""));
+  @ViewChild('ghost') ghost?: ElementRef;
+  ghostClass: String = "";
+
+  constructor(private fieldPipe: FieldPipe) { }
 
   ngOnInit(): void {
   }
 
+  onDragStart(event: DragEvent, i: number, j: number) {
+    console.log(`Dragging ${i}, ${j}`);
+    this.classList[i][j] = "dragging";
+    if (!this.ghost) {
+      return;
+    }
+    this.ghostClass = this.fieldPipe.transform(this.board[i][j]);
+    event.dataTransfer?.setDragImage(this.ghost.nativeElement, 25, 25);
+  }
+
+  onDragEnd(event: DragEvent, i: number, j: number) {
+    console.log(`Stop dragging ${i}, ${j}`);
+    this.classList[i][j] = "";
+  }
 }

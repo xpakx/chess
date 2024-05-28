@@ -29,7 +29,9 @@ import { FieldPipe } from './board/field.pipe';
     FormsModule,
     ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [
+    FieldPipe,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

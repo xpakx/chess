@@ -100,3 +100,14 @@
     background-repeat: no-repeat;
     background-size: 100%;
 }
+
+.cell.dragging {
+    background-image: none !important;
+}
+
+.cell.ghost {
+    background-color: transparent;
+    position: absolute;
+    top: -100000000px;
+    left: -100000000px;
+}
