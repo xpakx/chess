@@ -42,4 +42,25 @@ export class BoardComponent implements OnInit {
     console.log(`Stop dragging ${i}, ${j}`);
     this.classList[i][j] = "";
   }
+
+  onDragOver(event: DragEvent, i: number, j: number) {
+  }
+
+  onDrop(event: DragEvent, i: number, j: number) {
+    event.preventDefault();
+  }
+
+  onDragEnter(event: DragEvent, i: number, j: number) {
+    if (this.classList[i][j] != "") {
+      return;
+    }
+    this.classList[i][j] = "dragover";
+  }
+
+  onDragLeave(event: DragEvent, i: number, j: number) {
+    if (this.classList[i][j] != "dragover") {
+      return;
+    }
+    this.classList[i][j] = "";
+  }
 }

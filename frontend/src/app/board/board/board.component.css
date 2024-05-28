@@ -105,6 +105,11 @@
     background-image: none !important;
 }
 
+.cell.dragover {
+    box-shadow: inset 3px 3px 0 #f9e2af, inset -3px -3px 0 #f9e2af;
+
+}
+
 .cell.ghost {
     background-color: transparent;
     position: absolute;

@@ -6,6 +6,10 @@
         [draggable]="cell != 'Empty'"
         (dragstart)="onDragStart($event, i, j)"
         (dragend)="onDragEnd($event, i, j)"
+        (dragover)="onDragOver($event, i, j)"
+        (dragenter)="onDragEnter($event, i, j)"
+        (dragleave)="onDragLeave($event, i, j)"
+        (drop)="onDrop($event, i, j)"
         id="cell{{i}}{{j}}">
         </div>
     </div>
