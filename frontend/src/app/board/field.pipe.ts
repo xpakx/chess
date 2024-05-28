@@ -7,41 +7,41 @@ export class FieldPipe implements PipeTransform {
 
   transform(value: String): String {
     if (value == "WhiteKing") {
-      return "♔";
+      return "white king";
     }
     if (value == "WhiteQueen") {
-      return "♕";
+      return "white queen";
     }
     if (value == "WhiteBishop") {
-      return "♗";
+      return "white bishop";
     }
     if (value == "WhiteKnight") {
-      return "♘";
+      return "white knight";
     }
     if (value == "WhiteRook") {
-      return "♖";
+      return "white rook";
     }
     if (value == "WhitePawn") {
-      return "♙";
+      return "white pawn";
     }
 
     if (value == "BlackKing") {
-      return "♚";
+      return "black king";
     }
     if (value == "BlackQueen") {
-      return "♛";
+      return "black queen";
     }
     if (value == "BlackBishop") {
-      return "♝";
+      return "black bishop";
     }
     if (value == "BlackKnight") {
-      return "♞";
+      return "black knight";
     }
     if (value == "BlackRook") {
-      return "♜";
+      return "black rook";
     }
     if (value == "BlackPawn") {
-      return "♟";
+      return "black pawn";
     }
     return "";
   }

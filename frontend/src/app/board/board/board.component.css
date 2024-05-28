@@ -27,8 +27,8 @@
     justify-content: center;
     align-items: center;
     font-size: 2em;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
 }
 
 .chess-board .row:nth-child(odd) .cell:nth-child(odd) {
@@ -45,4 +45,58 @@
 
 .chess-board .row:nth-child(even) .cell:nth-child(odd) {
     background-color: #ff9aa3;
+}
+
+.cell.pawn.white {
+    background-image: url('/assets/wpawn.svg');
+}
+
+.cell.rook.white {
+    background-image: url('/assets/wrook.svg');
+}
+
+.cell.bishop.white {
+    background-image: url('/assets/wbishop.svg');
+}
+
+.cell.knight.white {
+    background-image: url('/assets/wknight.svg');
+}
+
+.cell.queen.white {
+    background-image: url('/assets/wqueen.svg');
+}
+
+.cell.king.white {
+    background-image: url('/assets/wking.svg');
+}
+
+.cell.pawn.black {
+    background-image: url('/assets/bpawn.svg');
+}
+
+.cell.rook.black {
+    background-image: url('/assets/brook.svg');
+}
+
+.cell.bishop.black {
+    background-image: url('/assets/bbishop.svg');
+}
+
+.cell.knight.black {
+    background-image: url('/assets/bknight.svg');
+}
+
+.cell.queen.black {
+    background-image: url('/assets/bqueen.svg');
+}
+
+.cell.king.black {
+    background-image: url('/assets/bking.svg');
+}
+
+.cell.white, .cell.black {
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: 100%;
 }
