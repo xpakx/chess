@@ -11,6 +11,7 @@ import { ChatComponent } from './chat/chat.component';
 import { MenuComponent } from './main/menu/menu.component';
 import { ToastComponent } from './elements/toast/toast.component';
 import { FieldPipe } from './board/field.pipe';
+import { GameListComponent } from './main/game-list/game-list.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { FieldPipe } from './board/field.pipe';
     ChatComponent,
     MenuComponent,
     ToastComponent,
-    FieldPipe
+    FieldPipe,
+    GameListComponent
   ],
   imports: [
     BrowserModule,
