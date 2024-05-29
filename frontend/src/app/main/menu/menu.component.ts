@@ -13,9 +13,9 @@ export class MenuComponent implements OnInit {
   error: boolean = false;
   errorMsg: String = "";
 
-  @Output() openGame: EventEmitter<number> = new EventEmitter<number>();
-  @Output() openGameModal: EventEmitter<GameType> = new EventEmitter<GameType>();
-  @Output("get") getList: EventEmitter<ListType> = new EventEmitter<ListType>();
+  @Output("game") openGame: EventEmitter<number> = new EventEmitter<number>();
+  @Output("new") openGameModal: EventEmitter<GameType> = new EventEmitter<GameType>();
+  @Output("list") getList: EventEmitter<ListType> = new EventEmitter<ListType>();
 
   constructor() { }
 

@@ -1,0 +1,17 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 20px;
+}
+
+ul {
+    flex: 1;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-y: auto;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    margin: 0;
+}

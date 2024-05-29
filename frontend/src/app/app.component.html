@@ -1,8 +1,11 @@
 <div class="container">
-  <app-menu></app-menu>
+  <app-menu (list)="openList($event)"></app-menu>
   <main class="content">
     <app-board></app-board>
-    <app-chat></app-chat>
+    <ng-container [ngSwitch]="menu">
+      <app-chat *ngSwitchCase="'chat'"></app-chat>
+      <app-game-list *ngSwitchCase="'list'" [view]="listType"></app-game-list>
+    </ng-container>
   </main>
 </div>
 <app-toast></app-toast>

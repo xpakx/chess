@@ -1,7 +1,9 @@
-<li *ngFor="let game of games">
-    {{ game.id }}
+<ul>
+    <li *ngFor="let game of games">
+        {{ game.id }}
 
-    <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
-    <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
-    <button *ngIf="activeView" (click)="open(game.id)">Open</button>
-</li>
+        <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
+        <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
+        <button *ngIf="activeView" (click)="open(game.id)">Open</button>
+    </li>
+</ul>
