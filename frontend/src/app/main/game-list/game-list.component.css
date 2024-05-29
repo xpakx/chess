@@ -6,7 +6,7 @@
     margin-left: 20px;
 }
 
-ul {
+.list {
     flex: 1;
     background-color: #f1f1f1;
     padding: 10px;

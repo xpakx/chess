@@ -1,9 +1,12 @@
-<ul>
-    <li *ngFor="let game of games">
-        {{ game.id }}
+<div class="list">
+    <app-refresh-button></app-refresh-button>
+    <ul>
+        <li *ngFor="let game of games">
+            {{ game.id }}
 
-        <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
-        <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
-        <button *ngIf="activeView" (click)="open(game.id)">Open</button>
-    </li>
-</ul>
+            <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
+            <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
+            <button *ngIf="activeView" (click)="open(game.id)">Open</button>
+        </li>
+    </ul>
+</div>
