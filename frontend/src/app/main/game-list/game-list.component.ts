@@ -70,8 +70,8 @@ export class GameListComponent implements OnInit {
 
     }
   ];
-  activeView: boolean = false;
-  requestsView: boolean = false;
+  activeView: boolean = true;
+  requestsView: boolean = true;
 
   constructor(private gameService: GameManagementService, private toast: ToastService) { }
 

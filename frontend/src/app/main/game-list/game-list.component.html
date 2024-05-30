@@ -5,13 +5,13 @@
     </div>
     <div class="empty-list" *ngIf="games.length == 0">No games.</div>
     <ul>
-        <li>
-        </li>
         <li *ngFor="let game of games">
             <app-miniboard [game]="game"></app-miniboard>
-            <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
-            <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
-            <button *ngIf="activeView" (click)="open(game.id)">Open</button>
+            <div class="icons">
+                <app-accept-button *ngIf="requestsView" (click)="accept(game.id)">Accept</app-accept-button>
+                <app-reject-button *ngIf="requestsView" (click)="reject(game.id)">Reject</app-reject-button>
+                <app-open-button *ngIf="activeView" (click)="open(game.id)">Open</app-open-button>
+            </div>
         </li>
     </ul>
 </div>

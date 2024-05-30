@@ -19,6 +19,9 @@
 .list ul {
     list-style: none;
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+
 }
 
 .header {
@@ -32,4 +35,17 @@
 .empty-list {
     padding-left: 10px;
     color: grey;
+}
+
+.list li {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap: 5px;
+}
+
+.icons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }

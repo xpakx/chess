@@ -15,6 +15,9 @@ import { GameListComponent } from './main/game-list/game-list.component';
 import { NewGameModalComponent } from './main/new-game-modal/new-game-modal.component';
 import { RefreshButtonComponent } from './elements/refresh-button/refresh-button.component';
 import { MiniboardComponent } from './board/miniboard/miniboard.component';
+import { OpenButtonComponent } from './elements/open-button/open-button.component';
+import { AcceptButtonComponent } from './elements/accept-button/accept-button.component';
+import { RejectButtonComponent } from './elements/reject-button/reject-button.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { MiniboardComponent } from './board/miniboard/miniboard.component';
     GameListComponent,
     NewGameModalComponent,
     RefreshButtonComponent,
-    MiniboardComponent
+    MiniboardComponent,
+    OpenButtonComponent,
+    AcceptButtonComponent,
+    RejectButtonComponent
   ],
   imports: [
     BrowserModule,
