@@ -16,6 +16,11 @@
     margin: 0;
 }
 
+.list ul {
+    list-style: none;
+    display: flex;
+}
+
 .header {
     display: flex;
     flex-direction: row;

@@ -4,7 +4,7 @@ export interface Game {
     gameType: "User" | "AI";
     aiType: "Random" | "None";
     gameStatus: "NotFinished" | "Won" | "Lost" | "Drawn";
-    currentState: String; // TODO
+    currentState: String[][]; // TODO
     lastMoveRow: number; // TODO
     lastMoveColumn: number; // TODO
     userStarts: boolean;
@@ -13,4 +13,5 @@ export interface Game {
     opponent: String; 
     user_id: number;
     opponent_id: number; 
+    invert: boolean;
 }

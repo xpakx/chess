@@ -1,1 +1,7 @@
-<p>miniboard works!</p>
+<div class="chess-board" [class.inverted]="game?.invert">
+    <div class="row" *ngFor="let row of game?.currentState; index as i">
+        <div *ngFor="let cell of row; index as j" 
+        class="cell" [class]="cell | field">
+        </div>
+    </div>
+</div>

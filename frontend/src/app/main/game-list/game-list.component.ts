@@ -14,7 +14,62 @@ export class GameListComponent implements OnInit {
   _view: ListType = "none";
   @Output() openGame: EventEmitter<number> = new EventEmitter<number>();
 
-  games: Game[] = [];
+  games: Game[] = [
+    {
+      currentState: [
+        ["BlackRook", "BlackKnight", "BlackBishop", "BlackQueen", "BlackKing", "BlackBishop", "BlackKnight", "BlackRook"],
+        ["BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn"],
+        ["WhiteRook", "WhiteKnight", "WhiteBishop", "WhiteQueen", "WhiteKing", "WhiteBishop", "WhiteKnight", "WhiteRook"],
+      ],
+      id: 1,
+      invitation: "Accepted",
+      gameType: "AI",
+      aiType: "Random",
+      gameStatus: "NotFinished",
+      lastMoveRow: 0,
+      lastMoveColumn: 0,
+      userStarts: false,
+      userTurn: false,
+      invert: false,
+      user: "Test",
+      user_id: 1,
+      opponent: "AI",
+      opponent_id: 2,
+
+    },
+    {
+      currentState: [
+        ["BlackRook", "BlackKnight", "BlackBishop", "BlackQueen", "BlackKing", "BlackBishop", "BlackKnight", "BlackRook"],
+        ["BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty", "Empty"],
+        ["WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn", "WhitePawn"],
+        ["WhiteRook", "WhiteKnight", "WhiteBishop", "WhiteQueen", "WhiteKing", "WhiteBishop", "WhiteKnight", "WhiteRook"],
+      ],
+      id: 2,
+      invitation: "Accepted",
+      gameType: "AI",
+      aiType: "Random",
+      gameStatus: "NotFinished",
+      lastMoveRow: 0,
+      lastMoveColumn: 0,
+      userStarts: false,
+      userTurn: false,
+      invert: true,
+      user: "Test",
+      user_id: 1,
+      opponent: "AI",
+      opponent_id: 2,
+
+    }
+  ];
   activeView: boolean = false;
   requestsView: boolean = false;
 
@@ -82,7 +137,7 @@ export class GameListComponent implements OnInit {
   }
 
   accept(gameId: number) {
-    this.gameService.acceptRequest(gameId, {status: "Accepted"})
+    this.gameService.acceptRequest(gameId, { status: "Accepted" })
       .subscribe({
         next: (value: Boolean) => this.onAccept(gameId),
         error: (err: HttpErrorResponse) => this.onError(err)

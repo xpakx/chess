@@ -5,9 +5,10 @@
     </div>
     <div class="empty-list" *ngIf="games.length == 0">No games.</div>
     <ul>
+        <li>
+        </li>
         <li *ngFor="let game of games">
-            {{ game.id }}
-    
+            <app-miniboard [game]="game"></app-miniboard>
             <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
             <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
             <button *ngIf="activeView" (click)="open(game.id)">Open</button>
