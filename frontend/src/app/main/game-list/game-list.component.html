@@ -1,7 +1,7 @@
 <div class="list">
     <div class="header">
         <h3>Games</h3>
-        <app-refresh-button></app-refresh-button>
+        <app-refresh-button (click)="refresh()"></app-refresh-button>
     </div>
     <div class="empty-list" *ngIf="games.length == 0">No games.</div>
     <ul>
