@@ -1,9 +1,13 @@
 <div class="list">
-    <app-refresh-button></app-refresh-button>
+    <div class="header">
+        <h3>Games</h3>
+        <app-refresh-button></app-refresh-button>
+    </div>
+    <div class="empty-list" *ngIf="games.length == 0">No games.</div>
     <ul>
         <li *ngFor="let game of games">
             {{ game.id }}
-
+    
             <button *ngIf="requestsView" (click)="accept(game.id)">Accept</button>
             <button *ngIf="requestsView" (click)="reject(game.id)">Reject</button>
             <button *ngIf="activeView" (click)="open(game.id)">Open</button>
