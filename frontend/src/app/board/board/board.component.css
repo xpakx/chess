@@ -17,9 +17,17 @@
     flex-direction: column;
 }
 
+.chess-board.inverted {
+    flex-direction: column-reverse;
+}
+
 .row {
     display: flex;
     flex-direction: row;
+}
+
+.chess-board.inverted .row {
+    flex-direction: row-reverse;
 }
 
 .cell {

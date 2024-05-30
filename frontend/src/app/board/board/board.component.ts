@@ -23,6 +23,7 @@ export class BoardComponent implements OnInit {
   classList: String[][] = Array(this.board.length).fill(null).map(() => Array(this.board.length).fill(""));
   @ViewChild('ghost') ghost?: ElementRef;
   ghostClass: String = "";
+  invert: boolean = false;
 
   constructor(private fieldPipe: FieldPipe, private toast: ToastService) { }
 

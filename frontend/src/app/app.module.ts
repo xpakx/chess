@@ -14,6 +14,7 @@ import { FieldPipe } from './board/field.pipe';
 import { GameListComponent } from './main/game-list/game-list.component';
 import { NewGameModalComponent } from './main/new-game-modal/new-game-modal.component';
 import { RefreshButtonComponent } from './elements/refresh-button/refresh-button.component';
+import { MiniboardComponent } from './board/miniboard/miniboard.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { RefreshButtonComponent } from './elements/refresh-button/refresh-button
     FieldPipe,
     GameListComponent,
     NewGameModalComponent,
-    RefreshButtonComponent
+    RefreshButtonComponent,
+    MiniboardComponent
   ],
   imports: [
     BrowserModule,
