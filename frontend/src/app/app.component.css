@@ -24,3 +24,15 @@
     flex-direction: column;
     gap: 10px;
 }
+
+@media screen and (max-width: 900px) {
+    .content {
+        gap: 20px;
+        flex-direction: column;
+    }
+    
+    .container {
+        height: auto;
+        overflow: visible;
+    }
+}
