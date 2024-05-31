@@ -37,7 +37,8 @@ export class BoardComponent implements OnInit {
       return;
     }
     this.ghostClass = this.fieldPipe.transform(this.board[i][j]);
-    event.dataTransfer?.setDragImage(this.ghost.nativeElement, 25, 25);
+    var offset = this.ghost.nativeElement.offsetWidth/2;
+    event.dataTransfer?.setDragImage(this.ghost.nativeElement, offset, offset);
   }
 
   onDragEnd(event: DragEvent, i: number, j: number) {
