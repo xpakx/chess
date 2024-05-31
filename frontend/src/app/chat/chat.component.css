@@ -1,9 +1,9 @@
 :host {
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     margin-left: 20px;
+    flex: 1;
 }
 
 .chat-box {
@@ -16,8 +16,100 @@
     margin-bottom: 10px;
 }
 
-.chat input {
+.chat-message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    justify-content: flex-start;
+}
+
+.chat-message.self {
+    flex-direction: row-reverse;
+}
+
+.chat-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.chat-message.self .chat-avatar {
+    background-color: #ff9aa3;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.chat-text {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 4px 8px 8px 8px;
+    background-color: #fff;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.chat-message.self .chat-text {
+    background-color: #f2d5cf;
+    border-radius: 8px 4px 8px 8px;
+}
+
+.chat-text::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: -9px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #fff transparent transparent;
+}
+
+.chat-message.self .chat-text::before {
+    left: auto;
+    right: -9px;
+    border-color: transparent transparent transparent #f2d5cf;
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-input {
+    flex: 1;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ddd;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.chat-input:focus {
+    border-color: #a8d0e6;
+    box-shadow: 0 0 5px rgba(168, 208, 230, 0.8);
+}
+
+.send-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #a8d0e6;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.send-button:hover {
+    background-color: #85b4cc;
+}
+
+.send-button:active {
+    background-color: #639bb8;
 }
