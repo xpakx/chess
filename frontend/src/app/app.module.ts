@@ -18,6 +18,7 @@ import { MiniboardComponent } from './board/miniboard/miniboard.component';
 import { OpenButtonComponent } from './elements/open-button/open-button.component';
 import { AcceptButtonComponent } from './elements/accept-button/accept-button.component';
 import { RejectButtonComponent } from './elements/reject-button/reject-button.component';
+import { AvatarComponent } from './elements/avatar/avatar.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { RejectButtonComponent } from './elements/reject-button/reject-button.co
     MiniboardComponent,
     OpenButtonComponent,
     AcceptButtonComponent,
-    RejectButtonComponent
+    RejectButtonComponent,
+    AvatarComponent
   ],
   imports: [
     BrowserModule,

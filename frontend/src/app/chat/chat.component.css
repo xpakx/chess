@@ -27,20 +27,13 @@
     flex-direction: row-reverse;
 }
 
-.chat-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+app-avatar {
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
 }
 
-.chat-message.self .chat-avatar {
-    background-color: #ff9aa3;
+.chat-message.self app-avatar {
     margin-left: 10px;
     margin-right: 0;
 }
