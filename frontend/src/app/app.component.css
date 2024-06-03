@@ -32,7 +32,6 @@
     }
     
     .container {
-        height: auto;
         overflow: visible;
     }
 }
