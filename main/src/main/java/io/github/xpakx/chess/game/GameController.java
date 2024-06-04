@@ -1,6 +1,7 @@
 package io.github.xpakx.chess.game;
 
 import io.github.xpakx.chess.game.dto.GameRequest;
+import io.github.xpakx.chess.game.dto.GameSummary;
 import io.github.xpakx.chess.game.dto.NewGameResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,4 +25,24 @@ public class GameController {
         );
     }
 
+    @GetMapping("/game/request")
+    public ResponseEntity<List<GameSummary>> getRequests(Principal principal) {
+        return ResponseEntity.ok(
+                service.getRequests(principal.getName())
+        );
+    }
+
+    @GetMapping("/game")
+    public ResponseEntity<List<GameSummary>> getGames(Principal principal) {
+        return ResponseEntity.ok(
+                service.getActiveGames(principal.getName())
+        );
+    }
+
+    @GetMapping("/game/archive")
+    public ResponseEntity<List<GameSummary>> getOldGames(Principal principal) {
+        return ResponseEntity.ok(
+                service.getOldGames(principal.getName())
+        );
+    }
 }

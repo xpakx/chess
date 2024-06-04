@@ -62,4 +62,31 @@ public class GameService {
     private String createEmptyGameState() {
         return ""; // TODO
     }
+
+    public List<GameSummary> getRequests(String username) {
+        return gameRepository.findRequests(
+                userRepository.findByUsername(username)
+                        .orElseThrow(UserNotFoundException::new)
+                        .getId()
+                ).stream()
+                .map((a) -> GameSummary.of(a, username)).toList();
+    }
+
+    public List<GameSummary> getActiveGames(String username) {
+        return gameRepository.findActiveGames(
+                userRepository.findByUsername(username)
+                        .orElseThrow(UserNotFoundException::new)
+                        .getId()
+                ).stream()
+                .map((a) -> GameSummary.of(a, username)).toList();
+    }
+
+    public List<GameSummary> getOldGames(String username) {
+        return gameRepository.findFinishedGames(
+                userRepository.findByUsername(username)
+                        .orElseThrow(UserNotFoundException::new)
+                        .getId()
+                ).stream()
+                .map((a) -> GameSummary.of(a, username)).toList();
+    }
 }
