@@ -30,6 +30,9 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "and g.accepted = true and g.finished = true")
     List<Game> findFinishedGames(Long id);
 
+    @EntityGraph(attributePaths = {"user", "opponent"})
+    Optional<Game> findWithUsersById(Long id);
+
     @EntityGraph(attributePaths = {"opponent"})
     Optional<Game> findWithOpponentById(Long id);
 }

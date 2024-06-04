@@ -113,4 +113,9 @@ public class GameService {
         gameRepository.save(game);
         return decision.isAccepted();
     }
+
+    public GameSummary getGame(String username, Long gameId) {
+        var game = gameRepository.findWithUsersById(gameId).orElseThrow(GameNotFoundException::new);
+        return GameSummary.of(game, username);
+    }
 }
