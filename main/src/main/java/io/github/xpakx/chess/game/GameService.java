@@ -114,6 +114,15 @@ public class GameService {
         return decision.isAccepted();
     }
 
+    public void updateGame(Game game, UpdateEvent event) {
+        game.setLastMoveAt(LocalDateTime.now());
+        game.setStatus(event.getStatus());
+        game.setCurrentState(event.getCurrentState());
+        game.setUserTurn(event.isUserTurn());
+        game.setLastMoveAt(event.getTimestamp());
+        gameRepository.save(game);
+    }
+
     public GameSummary getGame(String username, Long gameId) {
         var game = gameRepository.findWithUsersById(gameId).orElseThrow(GameNotFoundException::new);
         return GameSummary.of(game, username);
