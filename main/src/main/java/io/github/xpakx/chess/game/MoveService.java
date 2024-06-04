@@ -1,6 +1,7 @@
 package io.github.xpakx.chess.game;
 
 import io.github.xpakx.chess.game.dto.UpdateEvent;
+import io.github.xpakx.chess.game.error.GameNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,4 +31,12 @@ public class MoveService {
         }
         moveRepository.save(move);
     }
+
+    public List<Move> getMoveHistory(Long gameId) {
+        if (!gameRepository.existsById(gameId)) {
+            throw new GameNotFoundException();
+        }
+        return moveRepository.findByGameIdOrderByTimestampAsc(gameId);
+    }
+
 }
