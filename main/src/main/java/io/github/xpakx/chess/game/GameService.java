@@ -1,6 +1,9 @@
 package io.github.xpakx.chess.game;
 
 import io.github.xpakx.chess.game.dto.*;
+import io.github.xpakx.chess.game.error.GameNotFoundException;
+import io.github.xpakx.chess.game.error.RequestProcessedException;
+import io.github.xpakx.chess.game.error.UnauthorizedGameRequestChangeException;
 import io.github.xpakx.chess.game.error.UserNotFoundException;
 import io.github.xpakx.chess.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -88,5 +91,26 @@ public class GameService {
                         .getId()
                 ).stream()
                 .map((a) -> GameSummary.of(a, username)).toList();
+    }
+
+    public boolean acceptRequest(String username, Long requestId, AcceptRequest decision) {
+        var game = gameRepository.findWithOpponentById(requestId)
+                .orElseThrow(GameNotFoundException::new);
+        if (game.getInvitation() != InvitationStatus.Issued) {
+            throw new RequestProcessedException(
+                    "Request already " + (game.getInvitation() == InvitationStatus.Accepted ? "accepted!" : "rejected!")
+            );
+        }
+        if (!game.getOpponent().getUsername().equals(username)) {
+            throw new UnauthorizedGameRequestChangeException();
+        }
+        if (decision.isAccepted()) {
+            game.setInvitation(InvitationStatus.Accepted);
+            game.setStartedAt(LocalDateTime.now());
+        } else {
+            game.setInvitation(InvitationStatus.Rejected);
+        }
+        gameRepository.save(game);
+        return decision.isAccepted();
     }
 }

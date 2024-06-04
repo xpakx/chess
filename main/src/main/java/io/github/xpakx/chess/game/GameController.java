@@ -1,5 +1,6 @@
 package io.github.xpakx.chess.game;
 
+import io.github.xpakx.chess.game.dto.AcceptRequest;
 import io.github.xpakx.chess.game.dto.GameRequest;
 import io.github.xpakx.chess.game.dto.GameSummary;
 import io.github.xpakx.chess.game.dto.NewGameResponse;
@@ -43,6 +44,13 @@ public class GameController {
     public ResponseEntity<List<GameSummary>> getOldGames(Principal principal) {
         return ResponseEntity.ok(
                 service.getOldGames(principal.getName())
+        );
+    }
+
+    @PostMapping("/game/{gameId}/request")
+    public ResponseEntity<Boolean> acceptRequest(@PathVariable Long gameId, @RequestBody AcceptRequest request, Principal principal) {
+        return ResponseEntity.ok(
+                service.acceptRequest(principal.getName(), gameId, request)
         );
     }
 }
