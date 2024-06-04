@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class UpdateEventHandler {
     private final GameService service;
     private final GameRepository repository;
+    private final MoveService moveService;
 
     Logger logger = LoggerFactory.getLogger(UpdateEventHandler.class);
 
@@ -23,6 +24,7 @@ public class UpdateEventHandler {
             var game = repository.findById(event.getGameId());
             game.ifPresent((g) -> {
                         service.updateGame(g, event);
+                        moveService.saveMove(event);
                     }
             );
         } catch (final Exception e) {

@@ -25,6 +25,5 @@ public class UpdateEvent {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 
-    private Integer lastMoveX;
-    private Integer lastMoveY;
+    private String move;
 }
