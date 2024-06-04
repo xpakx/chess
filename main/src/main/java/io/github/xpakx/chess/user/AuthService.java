@@ -84,4 +84,30 @@ public class AuthService {
                 )
                 .build();
     }
+
+    public AuthenticationResponse refresh(RefreshTokenRequest request) {
+        if(jwt.isInvalid(request.getToken())) {
+            return null;
+        }
+        Claims claims = jwt.getAllClaimsFromToken(request.getToken());
+        Boolean isRefreshToken = claims.get("refresh", Boolean.class);
+        if (Boolean.FALSE.equals(isRefreshToken)) {
+            return null;
+        }
+
+        var username = claims.getSubject();
+        final UserDetails userDetails = userService.loadUserByUsername(username);
+
+        final String token = jwtUtils.generateToken(userDetails);
+        final String refreshToken = jwtUtils.generateRefreshToken(username);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .refreshToken(refreshToken)
+                .username(username)
+                .moderatorRole(
+                        userDetails.getAuthorities().stream()
+                                .anyMatch((a) -> a.getAuthority().equals("MODERATOR"))
+                )
+                .build();
+    }
 }

@@ -33,4 +33,12 @@ public class AuthController {
                 HttpStatus.CREATED
         );
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(
+                service.refresh(request)
+        );
+    }
 }
