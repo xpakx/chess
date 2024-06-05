@@ -3,6 +3,7 @@ package io.github.xpakx.chess.settings;
 import io.github.xpakx.chess.security.JwtAuthenticationEntryPoint;
 import io.github.xpakx.chess.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,12 +43,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(
                         (cors) -> cors.
-                                configurationSource(corsConfigurationSource())
+                                configurationSource(corsConfigurationSource)
                 )
                 .authorizeHttpRequests(
                         (auth) -> auth
@@ -68,9 +71,10 @@ public class SecurityConfig {
         return http.build();
     }
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${frontend.url}") final String frontend) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8001"));
+        corsConfiguration.setAllowedOrigins(List.of(frontend));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(List.of("*"));
