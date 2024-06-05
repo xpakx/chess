@@ -11,7 +11,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("select g from Game g " +
             "left join fetch g.user " +
             "left join fetch g.opponent " +
-            "where g.opponent.id = ?1 and g.accepted = false and g.rejected = false")
+            "where g.opponent.id = ?1 and g.invitation = io.github.xpakx.chess.game.InvitationStatus.Issued")
     List<Game> findRequests(Long id);
 
     @Query("select g from Game g " +
@@ -19,7 +19,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "left join fetch g.opponent " +
             "where " +
             "(g.user.id = ?1 or g.opponent.id = ?1) " +
-            "and g.accepted = true and g.finished = false")
+            "and g.invitation = io.github.xpakx.chess.game.InvitationStatus.Accepted " +
+            "and g.status = io.github.xpakx.chess.game.GameStatus.NotFinished")
     List<Game> findActiveGames(Long id);
 
     @Query("select g from Game g " +
@@ -27,7 +28,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "left join fetch g.opponent " +
             "where " +
             "(g.user.id = ?1 or g.opponent.id = ?1) " +
-            "and g.accepted = true and g.finished = true")
+            "and g.invitation = io.github.xpakx.chess.game.InvitationStatus.Accepted " +
+            "and g.status != io.github.xpakx.chess.game.GameStatus.NotFinished")
     List<Game> findFinishedGames(Long id);
 
     @EntityGraph(attributePaths = {"user", "opponent"})
