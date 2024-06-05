@@ -11,6 +11,7 @@ export class AppComponent {
   title = 'chess';
   menu: MenuType = "chat";
   listType: ListType = "none";
+  registerCard: boolean = false;
 
   openChat() {
     this.menu = "chat";
@@ -19,5 +20,13 @@ export class AppComponent {
   openList(listType: ListType) {
     this.menu = "list";
     this.listType = listType;
+  }
+
+  get logged(): boolean {
+    return localStorage.getItem("username") != null;
+  }
+
+  changeRegisterCard(value: boolean) {
+    this.registerCard = value;
   }
 }

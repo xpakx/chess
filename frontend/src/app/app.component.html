@@ -9,3 +9,9 @@
   </main>
 </div>
 <app-toast></app-toast>
+<div class="modal-overlay" *ngIf="!logged">
+    <div class="modal">
+        <app-modal-register *ngIf="registerCard" (card)="changeRegisterCard($event)"></app-modal-register>
+        <app-modal-login *ngIf="!registerCard" (card)="changeRegisterCard($event)"></app-modal-login>
+    </div>
+</div>
