@@ -59,4 +59,47 @@ public class GameService {
             movePublisher.sendAIEvent(game);
         }
     }
+
+    public void doMakeMove(EngineMoveEvent event) {
+        var game = getGameById(event.getGameId()).orElseThrow();
+        if (!event.isLegal()) {
+            game.setBlocked(false);
+            simpMessagingTemplate.convertAndSend(
+                    "/topic/game/" + game.getId(),
+                    MoveMessage.rejected(
+                            event.getMove(),
+                            game.getCurrentPlayer(),
+                            "Move is illegal!"
+                    )
+            );
+            repository.save(game);
+            return;
+        }
+
+        if (event.isFinished()) {
+            game.setFinished(true);
+            if (game.isFirstUserTurn()) {
+                game.setWon(true);
+            } else {
+                game.setLost(true);
+            }
+        }
+        var msg = MoveMessage.of(event.getMove(), game.getCurrentPlayer());
+        if (game.isFinished()) {
+            msg.setFinished(true);
+            msg.setWon(game.isWon());
+            msg.setWinner(game.getWinner().orElse(null));
+            repository.deleteById(game.getId());
+        } else {
+            game.nextPlayer();
+            game.setBlocked(false);
+            repository.save(game);
+        }
+        statePublisher.publish(game, event.getMove());
+
+        simpMessagingTemplate.convertAndSend("/topic/game/" + game.getId(), msg);
+        if (!game.isFinished() && game.aiTurn()) {
+            movePublisher.sendAIEvent(game);
+        }
+    }
 }
