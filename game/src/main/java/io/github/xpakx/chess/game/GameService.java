@@ -65,6 +65,18 @@ public class GameService {
                 (username.equals(game.getUsername2()) && game.isSecondUserTurn()));
     }
 
+    public GameMessage subscribe(Long gameId) {
+        var gameOpt = getGameById(gameId);
+        if (gameOpt.isEmpty()) {
+            gamePublisher.getGame(gameId);
+            var msg = new GameMessage();
+            msg.setError("Loading game, please wait…");
+            return msg;
+        }
+        var game = gameOpt.get();
+        return GameMessage.of(game);
+    }
+
     public void loadGame(StateEvent event) {
         if (event.isError()) {
             logger.debug("Error in state event for game {}", event.getId());

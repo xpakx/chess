@@ -20,6 +20,11 @@ public class GameController {
         return service.move(id, move, principal.getName());
     }
 
+    @SubscribeMapping("/board/{id}")
+    public GameMessage subscribeBoard(@DestinationVariable Long id) {
+        return service.subscribe(id);
+    }
+
     @MessageMapping("/chat/{id}")
     @SendTo("/topic/chat/{id}")
     public ChatMessage chat(@DestinationVariable Long id, ChatRequest request, Principal principal) {
