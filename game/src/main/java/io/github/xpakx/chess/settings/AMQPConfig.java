@@ -63,7 +63,7 @@ public class AMQPConfig {
     }
 
     @Bean
-    public Queue aiMovesQueue(@Value("${amqp.queue.ai.moves}") final String queueName) {
+    public Queue aiMovesQueue(@Value("${amqp.queue.ai}") final String queueName) {
         return QueueBuilder.durable(queueName).build();
     }
 
@@ -71,11 +71,11 @@ public class AMQPConfig {
     public Binding aiMovesBinding(final Queue aiMovesQueue, final TopicExchange engineTopicExchange) {
         return BindingBuilder.bind(aiMovesQueue)
                 .to(engineTopicExchange)
-                .with("ai.move");
+                .with("ai");
     }
 
     @Bean
-    public Queue validationMovesQueue(@Value("${amqp.queue.validation.moves}") final String queueName) {
+    public Queue validationMovesQueue(@Value("${amqp.queue.validation}") final String queueName) {
         return QueueBuilder.durable(queueName).build();
     }
 
@@ -83,19 +83,7 @@ public class AMQPConfig {
     public Binding validationMovesBinding(final Queue validationMovesQueue, final TopicExchange engineTopicExchange) {
         return BindingBuilder.bind(validationMovesQueue)
                 .to(engineTopicExchange)
-                .with("validation.move");
-    }
-
-    @Bean
-    public Queue placementQueue(@Value("${amqp.queue.placement}") final String queueName) {
-        return QueueBuilder.durable(queueName).build();
-    }
-
-    @Bean
-    public Binding placementBinding(final Queue placementQueue, final TopicExchange engineTopicExchange) {
-        return BindingBuilder.bind(placementQueue)
-                .to(engineTopicExchange)
-                .with("placement");
+                .with("move");
     }
 
     @Bean
