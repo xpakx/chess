@@ -15,6 +15,11 @@ import java.security.Principal;
 public class GameController {
     private final GameService service;
 
+    @MessageMapping("/move/{id}")
+    public MoveMessage move(@DestinationVariable Long id, MoveRequest move, Principal principal) {
+        return service.move(id, move, principal.getName());
+    }
+
     @MessageMapping("/chat/{id}")
     @SendTo("/topic/chat/{id}")
     public ChatMessage chat(@DestinationVariable Long id, ChatRequest request, Principal principal) {

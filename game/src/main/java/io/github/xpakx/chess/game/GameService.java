@@ -22,6 +22,49 @@ public class GameService {
     private final StatePublisher statePublisher;
     Logger logger = LoggerFactory.getLogger(GameService.class);
 
+    public MoveMessage move(Long gameId, MoveRequest move, String username) {
+        var gameOpt = getGameById(gameId);
+        if (gameOpt.isEmpty()) {
+            gamePublisher.getGame(gameId);
+            var msg = MoveMessage.rejected(move.getMove(), username, "Game not loaded, please wait!");
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
+            return msg;
+        }
+        var game = gameOpt.get();
+
+        if (!game.isUserInGame(username)) {
+            var msg = MoveMessage.rejected(move.getMove(), username, "Cannot move!");
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
+            return msg;
+        }
+        if (game.isFinished()) {
+            var msg =  MoveMessage.rejected(move.getMove(), username, "Game is finished!");
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
+            return msg;
+        }
+
+        if (game.isBlocked() || !canPlayerMove(game, move, username)) {
+            var msg = MoveMessage.rejected(move.getMove(), username, "Cannot move now!");
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
+            return msg;
+        }
+        game.setBlocked(true);
+        repository.save(game);
+
+        movePublisher.sendMove(game, move.getMove());
+
+        return MoveMessage.of(move.getMove(), username);
+    }
+
+    public Optional<GameState> getGameById(Long id) {
+        return repository.findById(id);
+    }
+
+    private boolean canPlayerMove(GameState game, MoveRequest move, String username) {
+        return ((username.equals(game.getUsername1()) && game.isFirstUserTurn()) ||
+                (username.equals(game.getUsername2()) && game.isSecondUserTurn()));
+    }
+
     public void loadGame(StateEvent event) {
         if (event.isError()) {
             logger.debug("Error in state event for game {}", event.getId());
