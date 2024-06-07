@@ -55,8 +55,8 @@ public class GameSummary {
 
     private static Field[][] stringToBoard(String str) {
         String[] list = str.split(" ");
-        if(list.length < 1) {
-            return null;
+        if(list.length == 0) {
+            return new Field[0][0];
         }
         String[] board = list[0].split("/");
         return Arrays.stream(board)
@@ -65,23 +65,18 @@ public class GameSummary {
     }
 
     private static Field[] stringToRank(String rank) {
-        var result = new Field[8];
+        final int DIMENSION = 8;
+        var result = new Field[DIMENSION];
         int position = 0;
-        for(int i = 0; i < rank.length(); i++) {
+        for(int i = 0; i < rank.length() && position < DIMENSION; i++) {
             char ch = rank.charAt(i);
             if(Character.isDigit(ch)) {
                 int emptyFields = Character.getNumericValue(ch);
-                for(int j = 0; j < emptyFields; j++) {
+                for(int j = 0; j < emptyFields && position < DIMENSION; j++) {
                     result[position++] = Field.Empty;
-                    if(position == 8) {
-                        break;
-                    }
                 }
             } else {
                 result[position++] = charToSymbol(ch);
-            }
-            if(position == 8) {
-                break;
             }
         }
        return result;
