@@ -7,6 +7,8 @@ import io.github.xpakx.chess.game.GameType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 public class GameSummary {
@@ -52,12 +54,54 @@ public class GameSummary {
     }
 
     private static Field[][] stringToBoard(String str) {
-        // TODO
-        return null;
+        String[] list = str.split(" ");
+        if(list.length < 1) {
+            return null;
+        }
+        String[] board = list[0].split("/");
+        return Arrays.stream(board)
+                .map(GameSummary::stringToRank)
+                .toArray(Field[][]::new);
+    }
+
+    private static Field[] stringToRank(String rank) {
+        var result = new Field[8];
+        int position = 0;
+        for(int i = 0; i < rank.length(); i++) {
+            char ch = rank.charAt(i);
+            if(Character.isDigit(ch)) {
+                int emptyFields = Character.getNumericValue(ch);
+                for(int j = 0; j < emptyFields; j++) {
+                    result[position++] = Field.Empty;
+                    if(position == 8) {
+                        break;
+                    }
+                }
+            } else {
+                result[position++] = charToSymbol(ch);
+            }
+            if(position == 8) {
+                break;
+            }
+        }
+       return result;
     }
 
     private static Field charToSymbol(char c) {
-        // TODO
-        return Field.Empty;
+        return switch (c) {
+            case 'P' -> Field.WhitePawn;
+            case 'N' -> Field.WhiteKnight;
+            case 'B' -> Field.WhiteBishop;
+            case 'R' -> Field.WhiteRook;
+            case 'Q' -> Field.WhiteQueen;
+            case 'K' -> Field.WhiteKing;
+            case 'p' -> Field.BlackPawn;
+            case 'n' -> Field.BlackKnight;
+            case 'b' -> Field.BlackBishop;
+            case 'r' -> Field.BlackRook;
+            case 'q' -> Field.BlackQueen;
+            case 'k' -> Field.BlackKing;
+            default -> Field.Empty;
+        };
     }
 }
