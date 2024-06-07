@@ -70,14 +70,13 @@ public class GameSummary {
         int position = 0;
         for(int i = 0; i < rank.length() && position < DIMENSION; i++) {
             char ch = rank.charAt(i);
-            if(Character.isDigit(ch)) {
-                int emptyFields = Character.getNumericValue(ch);
-                for(int j = 0; j < emptyFields && position < DIMENSION; j++) {
-                    result[position++] = Field.Empty;
-                }
-            } else {
+            if(!Character.isDigit(ch)) {
                 result[position++] = charToSymbol(ch);
+                continue;
             }
+            int emptyFields = Character.getNumericValue(ch);
+            Arrays.fill(result, position, Math.min(position + emptyFields, DIMENSION), Field.Empty);
+            position += emptyFields;
         }
        return result;
     }
