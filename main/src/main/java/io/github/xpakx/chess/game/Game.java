@@ -29,7 +29,7 @@ public class Game {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime lastMoveAt;
 
-    private String currentState;
+    private String currentState; // in FEN notation
     private Integer nonCaptureMoves;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

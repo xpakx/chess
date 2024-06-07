@@ -63,7 +63,7 @@ public class GameService {
     }
 
     private String createEmptyGameState() {
-        return ""; // TODO
+        return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     }
 
     public List<GameSummary> getRequests(String username) {
