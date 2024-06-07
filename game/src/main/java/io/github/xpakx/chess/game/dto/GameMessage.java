@@ -5,6 +5,8 @@ import io.github.xpakx.chess.game.GameState;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 public class GameMessage {
@@ -29,13 +31,54 @@ public class GameMessage {
     }
 
     private static String[][] stringToBoard(String str) {
-        //TODO
-        return null;
+        String[] list = str.split(" ");
+        if(list.length < 1) {
+            return null;
+        }
+        String[] board = list[0].split("/");
+        return Arrays.stream(board)
+                .map(GameMessage::stringToRank)
+                .toArray(String[][]::new);
+    }
+
+    private static String[] stringToRank(String rank) {
+        var result = new String[8];
+        int position = 0;
+        for(int i = 0; i < rank.length(); i++) {
+            char ch = rank.charAt(i);
+            if(Character.isDigit(ch)) {
+                int emptyFields = Character.getNumericValue(ch);
+                for(int j = 0; j < emptyFields; j++) {
+                    result[position++] = "Empty";
+                    if(position == 8) {
+                        break;
+                    }
+                }
+            } else {
+                result[position++] = charToSymbol(ch);
+            }
+            if(position == 8) {
+                break;
+            }
+        }
+        return result;
     }
 
     private static String charToSymbol(char c) {
-        // TODO
-        return "";
+        return switch (c) {
+            case 'P' -> "WhitePawn";
+            case 'N' -> "WhiteKnight";
+            case 'B' -> "WhiteBishop";
+            case 'R' -> "WhiteRook";
+            case 'Q' -> "WhiteQueen";
+            case 'K' -> "WhiteKing";
+            case 'p' -> "BlackPawn";
+            case 'n' -> "BlackKnight";
+            case 'b' -> "BlackBishop";
+            case 'r' -> "BlackRook";
+            case 'q' -> "BlackQueen";
+            case 'k' -> "BlackKing";
+            default -> "Empty";
+        };
     }
-
 }
