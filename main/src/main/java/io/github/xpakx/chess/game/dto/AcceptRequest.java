@@ -6,5 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AcceptRequest {
-    private boolean accepted;
+    private AcceptStatus status;
+
+    public boolean isAccepted() {
+        return status == AcceptStatus.Accepted;
+    }
 }
