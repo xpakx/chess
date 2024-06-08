@@ -1,14 +1,16 @@
-<h2>Create new game</h2>
-<form [formGroup]="requestForm" (ngSubmit)="finish()">
-  <input *ngIf="!ai" type="text" name="username" placeholder="Username" formControlName="username">
+<div class="form">
+  <h2>Create new game</h2>
+  <form [formGroup]="requestForm" (ngSubmit)="finish()">
+    <input *ngIf="!ai" type="text" name="username" placeholder="Username" formControlName="username">
 
-  <fieldset class="input-section" *ngIf="ai">
-    <div class="ai-choice">
-      <input type="radio" value="Random" formControlName="ai_type"> 
-      <div class="ai-name">Random</div>
-      <div class="ai-desc"></div>
-    </div>
-  </fieldset>
+    <fieldset class="input-section" *ngIf="ai">
+      <div class="ai-choice">
+        <input type="radio" value="Random" formControlName="ai_type">
+        <div class="ai-name">Random</div>
+        <div class="ai-desc"></div>
+      </div>
+    </fieldset>
 
-  <input type="submit" value="Create">
-</form>
+    <input type="submit" value="Create">
+  </form>
+</div>
