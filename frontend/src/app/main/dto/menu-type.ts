@@ -1,1 +1,1 @@
-export type MenuType = "chat" | "list";
+export type MenuType = "chat" | "list" | "new";

@@ -1,10 +1,11 @@
 <div class="container">
-  <app-menu (list)="openList($event)"></app-menu>
+  <app-menu (list)="openList($event)" (new)="createGame($event)"></app-menu>
   <main class="content">
     <app-board></app-board>
     <ng-container [ngSwitch]="menu">
       <app-chat *ngSwitchCase="'chat'"></app-chat>
       <app-game-list *ngSwitchCase="'list'" [view]="listType"></app-game-list>
+      <app-new-game-modal *ngSwitchCase="'new'" [ai]="aiGame" (new)="doCreateGame($event)"></app-new-game-modal>
     </ng-container>
   </main>
 </div>

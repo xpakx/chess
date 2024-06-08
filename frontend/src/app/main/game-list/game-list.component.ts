@@ -114,7 +114,7 @@ export class GameListComponent implements OnInit {
   }
 
   onError(err: HttpErrorResponse) {
-    this.toast.createToast({message: err.error, id: `error-${new Date().toTimeString}`, type: "error"});
+    this.toast.createToast({message: err.error.message, id: `error-${new Date().toTimeString}`, type: "error"});
   }
 
   open(gameId: number) {
