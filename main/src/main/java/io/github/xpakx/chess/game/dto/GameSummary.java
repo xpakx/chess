@@ -24,11 +24,12 @@ public class GameSummary {
     private boolean lost;
     private boolean drawn;
 
-    private String username1;
-    private String username2;
+    private String user;
+    private String opponent;
     private boolean userStarts;
 
     private boolean myTurn;
+    private boolean invert;
 
     public static GameSummary of(Game game, String requester) {
         var summary = new GameSummary();
@@ -40,14 +41,16 @@ public class GameSummary {
         summary.setWon(game.getStatus() == GameStatus.Won);
         summary.setLost(game.getStatus() == GameStatus.Lost);
         summary.setDrawn(game.getStatus() == GameStatus.Drawn);
-        summary.setUsername1(game.getUser().getUsername());
-        summary.setUsername2(
+        summary.setUser(game.getUser().getUsername());
+        summary.setOpponent(
                 game.getOpponent() != null ? game.getOpponent().getUsername() : "AI"
         );
-        if (requester.equals(summary.getUsername1())) {
+        if (requester.equals(summary.getUser())) {
             summary.setMyTurn(game.isUserTurn());
-        } else if (requester.equals(summary.getUsername2())) {
+            summary.setInvert(!game.isUserStarts());
+        } else if (requester.equals(summary.getOpponent())) {
             summary.setMyTurn(!game.isUserTurn());
+            summary.setInvert(game.isUserStarts());
         }
         summary.setUserStarts(game.isUserStarts());
         return summary;
