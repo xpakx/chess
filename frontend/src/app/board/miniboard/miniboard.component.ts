@@ -13,5 +13,4 @@ export class MiniboardComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

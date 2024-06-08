@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { ModalLoginComponent } from './auth/modal-login/modal-login.component';
 import { ModalRegisterComponent } from './auth/modal-register/modal-register.component'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ import { OpenButtonComponent } from './elements/open-button/open-button.componen
 import { AcceptButtonComponent } from './elements/accept-button/accept-button.component';
 import { RejectButtonComponent } from './elements/reject-button/reject-button.component';
 import { AvatarComponent } from './elements/avatar/avatar.component';
+import { ErrorInterceptor } from './error/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,11 @@ import { AvatarComponent } from './elements/avatar/avatar.component';
   ],
   providers: [
     FieldPipe,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
+    },
   ],
   bootstrap: [AppComponent]
 })
