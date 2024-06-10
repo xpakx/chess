@@ -1,31 +1,10 @@
 <div class="chat-box">
-    <div class="chat-message">
-        <div class="user">
-            <app-avatar [avatar]="'totoro'"></app-avatar>
-            <div class="username">Name</div>
-        </div>
-        <div class="chat-text">Hello! Ready for the game?</div>
-    </div>
-    <div class="chat-message self">
+    <div class="chat-message" *ngFor="let msg of chat" [class.self]="msg.self">
         <div class="user">
             <app-avatar [avatar]="'avocado'"></app-avatar>
-            <div class="username">Name</div>
+            <div class="username">{{msg.player}}</div>
         </div>
-        <div class="chat-text">Yes, let's start!</div>
-    </div>
-    <div class="chat-message">
-        <div class="user">
-            <app-avatar [avatar]="'totoro'"></app-avatar>
-            <div class="username">Name</div>
-        </div>
-        <div class="chat-text">Good luck!</div>
-    </div>
-    <div class="chat-message self">
-        <div class="user">
-            <app-avatar [avatar]="'avocado'"></app-avatar>
-            <div class="username">Name</div>
-        </div>
-        <div class="chat-text">Thanks, you too!</div>
+        <div class="chat-text">{{msg.message}}</div>
     </div>
 </div>
 <div class="chat-input-container">

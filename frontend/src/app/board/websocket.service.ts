@@ -8,6 +8,7 @@ import { MoveRequest } from './dto/move-request';
 import { ChatRequest } from './dto/chat-request';
 import { ChatMessage } from './dto/chat-message';
 import { BoardEvent } from './dto/board-event';
+import { ChatEvent } from './dto/chat-event';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +26,9 @@ export class WebsocketService {
   private moveQueue?: Subscription;
   move$: Observable<MoveMessage> = this.moveSubject.asObservable();
 
-  private chatSubject: Subject<ChatMessage> = new Subject<ChatMessage>();
+  private chatSubject: Subject<ChatEvent> = new Subject<ChatEvent>();
   private chatQueue?: Subscription;
-  chat$: Observable<ChatMessage> = this.chatSubject.asObservable();
+  chat$: Observable<ChatEvent> = this.chatSubject.asObservable();
 
   constructor() { 
     this.apiUrl = environment.apiUrl.replace(/^http/, 'ws');
@@ -135,7 +136,13 @@ export class WebsocketService {
       .watch(`/topic/chat/${gameId}`)
       .subscribe((message: IMessage) => {
         let msg: ChatMessage = JSON.parse(message.body)
-        this.chatSubject.next(msg);
+        this.processChat(msg);
       });
+  }
+
+  processChat(message: ChatMessage) {
+    const username = localStorage.getItem("username");
+    let self = username == message.player;
+    this.chatSubject.next({message: message.message, player: message.player, self: self});
   }
 }
