@@ -1,15 +1,19 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FieldPipe } from '../field.pipe';
 import { ToastService } from 'src/app/elements/toast.service';
 import { Field } from '../dto/field';
 import { WebsocketService } from '../websocket.service';
+import { Subscription } from 'rxjs';
+import { BoardMessage } from '../dto/board-message';
+import { MoveMessage } from '../dto/move-message';
+import { BoardEvent } from '../dto/board-event';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
   board: Field[][] = 
   [
     ["BlackRook", "BlackKnight", "BlackBishop", "BlackQueen", "BlackKing", "BlackBishop", "BlackKnight", "BlackRook"],
@@ -29,9 +33,24 @@ export class BoardComponent implements OnInit {
   _gameId: number | undefined = undefined;
   finished: boolean = false;
 
+  private moveSub?: Subscription;
+  private boardSub?: Subscription;
+
   constructor(private fieldPipe: FieldPipe, private toast: ToastService, private websocket: WebsocketService) { }
 
   ngOnInit(): void {
+    this.boardSub = this.websocket.board$
+      .subscribe((board: BoardEvent) => this.updateBoard(board));
+
+    this.moveSub = this.websocket.move$
+    .subscribe((move: MoveMessage) => this.makeMove(move));
+  }
+
+  ngOnDestroy() {
+    this.websocket.unsubscribe();
+    this.websocket.disconnect();
+    this.boardSub?.unsubscribe();
+    this.moveSub?.unsubscribe();
   }
 
   @Input() set id(value: number | undefined) {
@@ -81,5 +100,14 @@ export class BoardComponent implements OnInit {
       return;
     }
     this.classList[i][j] = "";
+  }
+
+  makeMove(move: MoveMessage) {
+    // TODO
+  }
+
+  updateBoard(board: BoardEvent) {
+    this.board = board.board.state;
+    this.invert = board.inverted;
   }
 }
