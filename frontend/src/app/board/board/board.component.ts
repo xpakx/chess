@@ -4,9 +4,10 @@ import { ToastService } from 'src/app/elements/toast.service';
 import { Field } from '../dto/field';
 import { WebsocketService } from '../websocket.service';
 import { Subscription } from 'rxjs';
-import { BoardMessage } from '../dto/board-message';
 import { MoveMessage } from '../dto/move-message';
 import { BoardEvent } from '../dto/board-event';
+import { Move } from '../dto/move';
+import { Piece } from '../dto/piece';
 
 @Component({
   selector: 'app-board',
@@ -104,6 +105,59 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   makeMove(move: MoveMessage) {
     // TODO
+    const pattern = /([KQRBN]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(=[KQRBN])?([+#]?)/;
+    const match = move.move.match(pattern);
+
+    if (!match) {
+      alert('Invalid move format');
+      return;
+    }
+
+    const [_,
+      piece,
+      disambiguationFile,
+      disambiguationRank,
+      capture,
+      destination,
+      promotion,
+      check
+    ] = match;
+
+    let transMove: Move = {
+      piece: this.getPiece(piece),
+      promotion: promotion ? this.getPiece(promotion.slice(1)) : undefined,
+      capture: capture ? true : false,
+      check: check ? true : false,
+      mate: check && check == "#" ? true : false,
+      target: [this.charToNumber(destination.charCodeAt(0)), this.charToNumber(destination.charCodeAt(1))],
+      start: [this.charToNumber(disambiguationFile.charCodeAt(0)), this.charToNumber(disambiguationRank.charCodeAt(0))],
+    }
+
+    console.log(piece, disambiguationFile, disambiguationRank, capture, destination, promotion, check)
+    console.log(transMove);
+  }
+
+  getPiece(piece: string | undefined): Piece {
+    if(!piece) {
+      return "Pawn";
+    }
+    switch (piece) {
+      case "K": return "King";
+      case "Q": return "Queen";
+      case "R": return "Rook";
+      case "B": return "Bishop";
+      case "N": return "Knight";
+      default: return "Pawn";
+    }
+  }
+
+  charToNumber(charCode: number): number {
+    if (charCode >= 97 && charCode <= 104) {
+      return charCode - 97;
+    } else if (charCode >= 49 && charCode <= 56) {
+      return charCode - 49;
+    } 
+    return -1;
   }
 
   updateBoard(board: BoardEvent) {

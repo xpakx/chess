@@ -1,0 +1,1 @@
+export type Piece = "Pawn" | "Knight" | "Rook" | "Bishop" | "Queen" | "King";
