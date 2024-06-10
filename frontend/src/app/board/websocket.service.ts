@@ -7,6 +7,7 @@ import { MoveMessage } from './dto/move-message';
 import { MoveRequest } from './dto/move-request';
 import { ChatRequest } from './dto/chat-request';
 import { ChatMessage } from './dto/chat-message';
+import { BoardEvent } from './dto/board-event';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,10 @@ export class WebsocketService {
   private apiUrl: String;
   rxStomp: RxStomp = new RxStomp();
 
-  private boardSubject: Subject<BoardMessage> = new Subject<BoardMessage>();
+  private boardSubject: Subject<BoardEvent> = new Subject<BoardEvent>();
   private boardQueue?: Subscription;
   private boardOOB?: Subscription;
-  board$: Observable<BoardMessage> = this.boardSubject.asObservable();
+  board$: Observable<BoardEvent> = this.boardSubject.asObservable();
 
   private moveSubject: Subject<MoveMessage> = new Subject<MoveMessage>();
   private moveQueue?: Subscription;
@@ -116,8 +117,17 @@ export class WebsocketService {
   }
 
   processBoard(message: BoardMessage) {
-    // TODO: test if it's necessary to invert the board
-    this.boardSubject.next(message);
+    const username = localStorage.getItem("username");
+    let inverted = false;
+    if(username) {
+      if(message.username1 == username) {
+        inverted = !message.firstUserStarts;
+      } else if(message.username2 == username) {
+        inverted = message.firstUserStarts;
+      }
+    }
+
+    this.boardSubject.next({board: message, inverted: inverted});
   }
 
   subscribeChat(gameId: number) {

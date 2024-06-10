@@ -3,8 +3,7 @@ export interface BoardMessage {
     username2: String;
     ai: boolean;
 
-    state: ("Sunk" | "Hit" | "Miss" | "Empty")[][];
-    state2: ("Sunk" | "Hit" | "Miss" | "Empty")[][];
+    state: String[][];
     currentPlayer: String;
     gameStarted: boolean;
 
