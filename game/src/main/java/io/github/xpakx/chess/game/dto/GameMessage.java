@@ -16,6 +16,7 @@ public class GameMessage {
 
     private String[][] state;
     private String currentPlayer;
+    private boolean firstUserStarts;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String error;
@@ -27,6 +28,7 @@ public class GameMessage {
         msg.setAi(game.isUser2AI());
         msg.setState(stringToBoard(game.getCurrentState()));
         msg.setCurrentPlayer(game.isFirstUserTurn() ? game.getUsername1() : game.getUsername2());
+        msg.setFirstUserStarts(game.isFirstUserStarts());
         return msg;
     }
 
