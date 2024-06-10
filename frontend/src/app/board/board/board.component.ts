@@ -1,7 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FieldPipe } from '../field.pipe';
 import { ToastService } from 'src/app/elements/toast.service';
 import { Field } from '../dto/field';
+import { WebsocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-board',
@@ -25,10 +26,22 @@ export class BoardComponent implements OnInit {
   @ViewChild('ghost') ghost?: ElementRef;
   ghostClass: String = "";
   invert: boolean = false;
+  _gameId: number | undefined = undefined;
+  finished: boolean = false;
 
-  constructor(private fieldPipe: FieldPipe, private toast: ToastService) { }
+  constructor(private fieldPipe: FieldPipe, private toast: ToastService, private websocket: WebsocketService) { }
 
   ngOnInit(): void {
+  }
+
+  @Input() set id(value: number | undefined) {
+    this._gameId = value;
+    this.finished = false;
+    this.invert = false;
+    if (this._gameId) {
+      this.websocket.connect();
+      this.websocket.subscribeGame(this._gameId);
+    }
   }
 
   onDragStart(event: DragEvent, i: number, j: number) {

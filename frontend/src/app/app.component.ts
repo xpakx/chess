@@ -19,6 +19,7 @@ export class AppComponent {
   aiGame: boolean = false;
   listType: ListType = "none";
   registerCard: boolean = false;
+  gameId: number | undefined = undefined;
 
   constructor(private service: GameManagementService, private toast: ToastService) {}
 
@@ -52,11 +53,16 @@ export class AppComponent {
   }
 
   onGameCreation(response: GameResponse) {
-    // TODO
+    if(this.aiGame) {
+      this.openGame(response.gameId);
+    }
   }
 
   onError(error: HttpErrorResponse) {
     this.toast.createToast({message: error.error.message, id: `error-${new Date().toTimeString}`, type: "error"});
   }
 
+  openGame(gameId: number) {
+    this.gameId = gameId;
+  }
 }
