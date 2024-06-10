@@ -7,7 +7,7 @@
         <div class="chat-text">{{msg.message}}</div>
     </div>
 </div>
-<div class="chat-input-container">
-    <input type="text" class="chat-input" placeholder="Type your message...">
-    <button class="send-button">Send</button>
+<div class="chat-input-container" [formGroup]="chatForm">
+    <input type="text" class="chat-input" placeholder="Type your message..." formControlName="message">
+    <button class="send-button" (click)="sendMessage()">Send</button>
 </div>

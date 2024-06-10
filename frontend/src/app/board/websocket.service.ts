@@ -29,6 +29,7 @@ export class WebsocketService {
   private chatSubject: Subject<ChatEvent> = new Subject<ChatEvent>();
   private chatQueue?: Subscription;
   chat$: Observable<ChatEvent> = this.chatSubject.asObservable();
+  id?: number;
 
   constructor() { 
     this.apiUrl = environment.apiUrl.replace(/^http/, 'ws');
@@ -70,11 +71,15 @@ export class WebsocketService {
     this.rxStomp.publish({ destination: `/app/move/${gameId}`, body: JSON.stringify(move) });
   }
 
-  sendChat(gameId: number, msg: ChatRequest) {
-    this.rxStomp.publish({ destination: `/app/chat/${gameId}`, body: JSON.stringify(msg) });
+  sendChat(msg: ChatRequest) {
+    if(!this.id) {
+      return;
+    }
+    this.rxStomp.publish({ destination: `/app/chat/${this.id}`, body: JSON.stringify(msg) });
   }
 
   subscribeGame(gameId: number) {
+    this.id = gameId;
     this.unsubscribe();
     this.subscribeMoves(gameId);
     this.subscribeBoard(gameId);
@@ -82,6 +87,7 @@ export class WebsocketService {
   }
 
   unsubscribe() {
+    this.id = undefined;
     this.chatQueue?.unsubscribe();
     this.moveQueue?.unsubscribe();
     this.boardQueue?.unsubscribe();

@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { ChatMessage } from '../board/dto/chat-message';
 import { WebsocketService } from '../board/websocket.service';
 import { ChatEvent } from '../board/dto/chat-event';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-chat',
@@ -12,12 +13,15 @@ import { ChatEvent } from '../board/dto/chat-event';
 export class ChatComponent implements OnInit {
   chat: ChatEvent[] = [];
   private chatSub?: Subscription;
+  chatForm: FormGroup;
 
-  constructor(private websocket: WebsocketService) { }
+  constructor(private formBuilder: FormBuilder, private websocket: WebsocketService) {
+    this.chatForm = this.formBuilder.group({ message: [''] });
+  }
 
   ngOnInit(): void {
     this.chatSub = this.websocket.chat$
-    .subscribe((event: ChatEvent) => this.onChat(event));
+      .subscribe((event: ChatEvent) => this.onChat(event));
   }
 
   onChat(message: ChatEvent) {
@@ -27,4 +31,13 @@ export class ChatComponent implements OnInit {
   ngOnDestroy(): void {
     this.chatSub?.unsubscribe();
   }
+
+  sendMessage() {
+    if (this.chatForm.invalid) {
+      return;
+    }
+    let message = this.chatForm.value.message;
+    this.websocket.sendChat(message);
+  }
 }
+
