@@ -1,11 +1,13 @@
+import { Field } from "./field";
+
 export interface BoardMessage {
     username1: String;
     username2: String;
     ai: boolean;
 
-    state: String[][];
+    state: Field[][];
     currentPlayer: String;
-    gameStarted: boolean;
+    firstUserStarts: boolean;
 
     error?: String;
 }

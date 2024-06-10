@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FieldPipe } from '../field.pipe';
 import { ToastService } from 'src/app/elements/toast.service';
+import { Field } from '../dto/field';
 
 @Component({
   selector: 'app-board',
@@ -8,7 +9,7 @@ import { ToastService } from 'src/app/elements/toast.service';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
-  board: String[][] = 
+  board: Field[][] = 
   [
     ["BlackRook", "BlackKnight", "BlackBishop", "BlackQueen", "BlackKing", "BlackBishop", "BlackKnight", "BlackRook"],
     ["BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn"],

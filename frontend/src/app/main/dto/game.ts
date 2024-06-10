@@ -1,10 +1,12 @@
+import { Field } from "src/app/board/dto/field";
+
 export interface Game {
     id: number;
     invitation: "Issued" | "Accepted" | "Rejected";
     gameType: "User" | "AI";
     aiType: "Random" | "None";
     gameStatus: "NotFinished" | "Won" | "Lost" | "Drawn";
-    currentState: String[][]; // TODO
+    currentState: Field[][];
     lastMoveRow: number; // TODO
     lastMoveColumn: number; // TODO
     userStarts: boolean;
