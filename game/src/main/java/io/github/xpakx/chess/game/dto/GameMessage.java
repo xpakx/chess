@@ -44,24 +44,18 @@ public class GameMessage {
     }
 
     private static String[] stringToRank(String rank) {
-        var result = new String[8];
+        final int DIMENSION = 8;
+        var result = new String[DIMENSION];
         int position = 0;
-        for(int i = 0; i < rank.length(); i++) {
+        for(int i = 0; i < rank.length() && position < DIMENSION; i++) {
             char ch = rank.charAt(i);
-            if(Character.isDigit(ch)) {
-                int emptyFields = Character.getNumericValue(ch);
-                for(int j = 0; j < emptyFields; j++) {
-                    result[position++] = "Empty";
-                    if(position == 8) {
-                        break;
-                    }
-                }
-            } else {
+            if(!Character.isDigit(ch)) {
                 result[position++] = charToSymbol(ch);
+                continue;
             }
-            if(position == 8) {
-                break;
-            }
+            int emptyFields = Character.getNumericValue(ch);
+            Arrays.fill(result, position, Math.min(position + emptyFields, DIMENSION), "Empty");
+            position += emptyFields;
         }
         return result;
     }
