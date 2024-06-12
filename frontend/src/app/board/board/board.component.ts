@@ -114,7 +114,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     const [_,
-      piece,
+      pieceLetter,
       disambiguationFile,
       disambiguationRank,
       capture,
@@ -123,24 +123,31 @@ export class BoardComponent implements OnInit, OnDestroy {
       check
     ] = match;
 
+    const piece = this.getPiece(pieceLetter);
+    const target = [this.charToNumber(destination.charCodeAt(0)), this.charToNumber(destination.charCodeAt(1))];
+    const startFile = disambiguationFile ? this.charToNumber(disambiguationFile.charCodeAt(0)) : undefined;
+    const startRank = disambiguationRank ? this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
+    const start = this.findStart(target, "White", piece, startFile, startRank); //TODO
+    if (!start) {
+      return;
+    }
+
+
     let transMove: Move = {
-      piece: this.getPiece(piece),
+      piece: piece,
       promotion: promotion ? this.getPiece(promotion.slice(1)) : undefined,
       capture: capture ? true : false,
       check: check ? true : false,
       mate: check && check == "#" ? true : false,
-      target: [this.charToNumber(destination.charCodeAt(0)), this.charToNumber(destination.charCodeAt(1))],
-      start: [this.charToNumber(disambiguationFile.charCodeAt(0)), this.charToNumber(disambiguationRank.charCodeAt(0))],
+      target: target,
+      start: start,
     }
 
     console.log(piece, disambiguationFile, disambiguationRank, capture, destination, promotion, check)
     console.log(transMove);
   }
 
-  getPiece(piece: string | undefined): Piece {
-    if(!piece) {
-      return "Pawn";
-    }
+  getPiece(piece: string): Piece {
     switch (piece) {
       case "K": return "King";
       case "Q": return "Queen";
@@ -163,5 +170,42 @@ export class BoardComponent implements OnInit, OnDestroy {
   updateBoard(board: BoardEvent) {
     this.board = board.board.state;
     this.invert = board.inverted;
+  }
+
+  findStart(target: number[], color: "Black" | "White", piece: Piece, startFile?: number, startRank?: number): number[] | undefined {
+    if(startFile && startRank) {
+      return [startFile, startRank];
+    }
+
+    let type = `${color}${piece}`;
+    let candidates: number[][] = [];
+
+    if(startRank) {
+      for(let i = 0; i<8; i++) {
+        if(this.board[startRank][i] == type) {
+          candidates.push([startRank, i]);
+        }
+      }
+    } else if(startFile) {
+      for(let i = 0; i<8; i++) {
+        if(this.board[i][startFile] == type) {
+          candidates.push([i, startFile]);
+        }
+      }
+    } else {
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+          if (this.board[i][j] == type) {
+            candidates.push([i, j]);
+          }
+        }
+      }
+    }
+
+    return candidates.find((c) => this.checkCapture(c, target, piece));
+  }
+
+  checkCapture(start: number[], target: number[], piece: Piece): boolean {
+    return true;
   }
 }
