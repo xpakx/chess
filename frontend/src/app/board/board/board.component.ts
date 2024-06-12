@@ -215,10 +215,10 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     }
 
-    return candidates.find((c) => this.checkCapture(c, target, piece));
+    return candidates.find((c) => this.checkCapture(c, target, piece, color));
   }
 
-  checkCapture(start: number[], target: number[], piece: Piece): boolean {
+  checkCapture(start: number[], target: number[], piece: Piece, color: "White" | "Black"): boolean {
     // TODO
     if (piece == "Rook") {
       return this.checkRookCapture(start, target);
@@ -226,6 +226,12 @@ export class BoardComponent implements OnInit, OnDestroy {
       return this.checkRookCapture(start, target) || this.checkBishopCapture(start, target);
     } else if (piece == "Bishop") {
       return this.checkBishopCapture(start, target);
+    } else if (piece == "Knight") {
+      return this.checkKnightCapture(start, target);
+    } else if (piece == "King") {
+      return this.checkKingCapture(start, target);
+    } else if (piece == "Pawn") {
+      return this.checkPawnCapture(start, target, color)
     }
     
     return false;
@@ -261,5 +267,28 @@ export class BoardComponent implements OnInit, OnDestroy {
   checkBishopCapture(start: number[], target: number[]): boolean {
     // TODO
     return false;
+  }
+
+  checkKnightCapture(start: number[], target: number[]): boolean {
+    const dx = Math.abs(start[0] - target[0]);
+    const dy = Math.abs(start[1] - target[1]);
+    return (dx === 2 && dy === 1) || (dx === 1 && dy === 2);
+  }
+
+  checkKingCapture(start: number[], target: number[]): boolean {
+    const dx = Math.abs(start[0] - target[0]);
+    const dy = Math.abs(start[1] - target[1]);
+    return dx <= 1 && dy <= 1 && !(dx === 0 && dy === 0);
+  }
+
+  checkPawnCapture(start: number[], target: number[], color: "White" | "Black"): boolean {
+    // TODO: en passant
+    const dx = Math.abs(start[0] - target[0]);
+    const dy = target[1] - start[1];
+    if (color == "White") {
+      return dx === 1 && dy === 1;
+    } else {
+      return dx === 1 && dy === -1;
+    }
   }
 }
