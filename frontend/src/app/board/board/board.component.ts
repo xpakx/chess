@@ -103,14 +103,31 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.classList[i][j] = "";
   }
 
-  makeMove(move: MoveMessage) {
+  makeMove(message: MoveMessage) {
     // TODO
+    const color = "White"; // TODO
+
+    //  TODO: castling
+    let move = this.parseMove(message.move, color);
+    if(!move) {
+      return;
+    }
+
+    console.log(move);
+
+    this.board[move.start[0]][move.start[1]] = "Empty";
+    const pieceAfterMove = `${color}${move.promotion ? move.promotion : move.piece}` as Field;
+    this.board[move.target[0]][move.target[1]] = pieceAfterMove;
+    // TODO: if enpassant…
+  }
+
+
+  parseMove(move: String, color: "Black" | "White"): Move | undefined {
     const pattern = /([KQRBN]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(=[KQRBN])?([+#]?)/;
-    const match = move.move.match(pattern);
+    const match = move.match(pattern);
 
     if (!match) {
-      alert('Invalid move format');
-      return;
+      return undefined;
     }
 
     const [_,
@@ -127,13 +144,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     const target = [this.charToNumber(destination.charCodeAt(0)), this.charToNumber(destination.charCodeAt(1))];
     const startFile = disambiguationFile ? this.charToNumber(disambiguationFile.charCodeAt(0)) : undefined;
     const startRank = disambiguationRank ? this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
-    const start = this.findStart(target, "White", piece, startFile, startRank); //TODO
+    const start = this.findStart(target, color, piece, startFile, startRank); //TODO
     if (!start) {
       return;
     }
 
-
-    let transMove: Move = {
+    return {
       piece: piece,
       promotion: promotion ? this.getPiece(promotion.slice(1)) : undefined,
       capture: capture ? true : false,
@@ -142,9 +158,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       target: target,
       start: start,
     }
-
-    console.log(piece, disambiguationFile, disambiguationRank, capture, destination, promotion, check)
-    console.log(transMove);
   }
 
   getPiece(piece: string): Piece {
@@ -206,6 +219,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   checkCapture(start: number[], target: number[], piece: Piece): boolean {
+    // TODO
     return true;
   }
 }
