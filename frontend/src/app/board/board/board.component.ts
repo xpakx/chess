@@ -220,6 +220,46 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   checkCapture(start: number[], target: number[], piece: Piece): boolean {
     // TODO
-    return true;
+    if (piece == "Rook") {
+      return this.checkRookCapture(start, target);
+    } else if (piece == "Queen") {
+      return this.checkRookCapture(start, target) || this.checkBishopCapture(start, target);
+    } else if (piece == "Bishop") {
+      return this.checkBishopCapture(start, target);
+    }
+    
+    return false;
+  }
+
+  checkRookCapture(start: number[], target: number[]): boolean {
+    if (start[0] != target[0] && start[1] != target[1]) {
+      return false;
+    }
+    if (start[0] == target[0]) {
+      const first = start[1] < target[1] ? start[1] : target[1];
+      const second = start[1] < target[1] ? target[1] : start[1];
+      for (let i = first + 1; i < second; i++) {
+        if (this.board[start[0]][i] != "Empty") {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (start[1] == target[1]) {
+      const first = start[0] < target[0] ? start[0] : target[0];
+      const second = start[0] < target[0] ? target[0] : start[0];
+      for (let i = first + 1; i < second; i++) {
+        if (this.board[i][start[1]] != "Empty") {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  checkBishopCapture(start: number[], target: number[]): boolean {
+    // TODO
+    return false;
   }
 }
