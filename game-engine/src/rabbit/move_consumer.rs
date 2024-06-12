@@ -1,7 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::rabbit::DESTINATION_EXCHANGE;
+use crate::{rabbit::DESTINATION_EXCHANGE, Color};
 
 
 pub fn set_move_delegate(consumer: lapin::Consumer, channel: Channel) {
@@ -65,6 +65,7 @@ struct MoveEvent {
     #[serde(rename = "move")]
     mov: String,
     noncapture_moves: usize,
+    color: Color,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

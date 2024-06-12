@@ -1,7 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::rabbit::DESTINATION_EXCHANGE;
+use crate::{rabbit::DESTINATION_EXCHANGE, Color};
 
 use super::move_consumer::EngineEvent;
 
@@ -67,6 +67,7 @@ struct AIEvent {
     noncapture_moves: usize,
     #[serde(rename = "type")]
     ai_type: String,
+    color: Color,
 }
 
 fn process_ai_event(_message: AIEvent) -> EngineEvent {
