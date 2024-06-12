@@ -219,7 +219,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   checkCapture(start: number[], target: number[], piece: Piece, color: "White" | "Black"): boolean {
-    // TODO
     if (piece == "Rook") {
       return this.checkRookCapture(start, target);
     } else if (piece == "Queen") {
@@ -242,8 +241,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       return false;
     }
     if (start[0] == target[0]) {
-      const first = start[1] < target[1] ? start[1] : target[1];
-      const second = start[1] < target[1] ? target[1] : start[1];
+      const first = Math.min(start[1], target[1]);
+      const second = Math.max(start[1], target[1]);
       for (let i = first + 1; i < second; i++) {
         if (this.board[start[0]][i] != "Empty") {
           return false;
@@ -252,8 +251,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       return true;
     }
     if (start[1] == target[1]) {
-      const first = start[0] < target[0] ? start[0] : target[0];
-      const second = start[0] < target[0] ? target[0] : start[0];
+      const first = Math.min(start[0], target[0]);
+      const second = Math.max(start[0], target[0]);
       for (let i = first + 1; i < second; i++) {
         if (this.board[i][start[1]] != "Empty") {
           return false;
@@ -265,8 +264,24 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   checkBishopCapture(start: number[], target: number[]): boolean {
-    // TODO
-    return false;
+    const dx = Math.abs(start[0] - target[0]);
+    const dy = Math.abs(start[1] - target[1]);
+
+    if (dx != dy) {
+      return false;
+    }
+
+    const xDirection = start[0] < target[0] ? 1 : -1;
+    const yDirection = start[1] < target[1] ? 1 : -1;
+
+    for (let i = 1; i < dx; i++) {
+      const x = start[0] + i * xDirection;
+      const y = start[1] + i * yDirection;
+      if (this.board[x][y] !== "Empty") {
+        return false;
+      }
+    }
+    return true;
   }
 
   checkKnightCapture(start: number[], target: number[]): boolean {
