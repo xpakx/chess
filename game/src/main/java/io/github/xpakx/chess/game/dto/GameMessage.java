@@ -14,7 +14,7 @@ public class GameMessage {
     private String username2;
     private boolean ai;
 
-    private String[][] state;
+    private Field[][] state;
     private String currentPlayer;
     private boolean firstUserStarts;
 
@@ -32,20 +32,20 @@ public class GameMessage {
         return msg;
     }
 
-    private static String[][] stringToBoard(String str) {
+    private static Field[][] stringToBoard(String str) {
         String[] list = str.split(" ");
-        if(list.length < 1) {
-            return null;
+        if(list.length == 0) {
+            return new Field[0][0];
         }
         String[] board = list[0].split("/");
         return Arrays.stream(board)
                 .map(GameMessage::stringToRank)
-                .toArray(String[][]::new);
+                .toArray(Field[][]::new);
     }
 
-    private static String[] stringToRank(String rank) {
+    private static Field[] stringToRank(String rank) {
         final int DIMENSION = 8;
-        var result = new String[DIMENSION];
+        var result = new Field[DIMENSION];
         int position = 0;
         for(int i = 0; i < rank.length() && position < DIMENSION; i++) {
             char ch = rank.charAt(i);
@@ -54,27 +54,27 @@ public class GameMessage {
                 continue;
             }
             int emptyFields = Character.getNumericValue(ch);
-            Arrays.fill(result, position, Math.min(position + emptyFields, DIMENSION), "Empty");
+            Arrays.fill(result, position, Math.min(position + emptyFields, DIMENSION), Field.Empty);
             position += emptyFields;
         }
         return result;
     }
 
-    private static String charToSymbol(char c) {
+    private static Field charToSymbol(char c) {
         return switch (c) {
-            case 'P' -> "WhitePawn";
-            case 'N' -> "WhiteKnight";
-            case 'B' -> "WhiteBishop";
-            case 'R' -> "WhiteRook";
-            case 'Q' -> "WhiteQueen";
-            case 'K' -> "WhiteKing";
-            case 'p' -> "BlackPawn";
-            case 'n' -> "BlackKnight";
-            case 'b' -> "BlackBishop";
-            case 'r' -> "BlackRook";
-            case 'q' -> "BlackQueen";
-            case 'k' -> "BlackKing";
-            default -> "Empty";
+            case 'P' -> Field.WhitePawn;
+            case 'N' -> Field.WhiteKnight;
+            case 'B' -> Field.WhiteBishop;
+            case 'R' -> Field.WhiteRook;
+            case 'Q' -> Field.WhiteQueen;
+            case 'K' -> Field.WhiteKing;
+            case 'p' -> Field.BlackPawn;
+            case 'n' -> Field.BlackKnight;
+            case 'b' -> Field.BlackBishop;
+            case 'r' -> Field.BlackRook;
+            case 'q' -> Field.BlackQueen;
+            case 'k' -> Field.BlackKing;
+            default -> Field.Empty;
         };
     }
 }
