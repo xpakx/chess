@@ -23,6 +23,7 @@ public class MovePublisher {
         event.setGameState(game.getCurrentState());
         event.setMove(move);
         event.setNonCapturingMoves(game.getNonCaptureMoves());
+        event.setColor(game.getColor());
         template.convertAndSend(movesTopic, "move", event);
     }
 
@@ -32,6 +33,7 @@ public class MovePublisher {
         event.setGameState(game.getCurrentState());
         event.setType(game.getAiType());
         event.setNonCapturingMoves(game.getNonCaptureMoves());
+        event.setColor(game.getColor());
         template.convertAndSend(movesTopic, "ai", event);
     }
 }

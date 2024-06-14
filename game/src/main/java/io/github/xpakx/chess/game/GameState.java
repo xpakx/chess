@@ -1,5 +1,6 @@
 package io.github.xpakx.chess.game;
 
+import io.github.xpakx.chess.game.dto.Color;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
@@ -60,6 +61,13 @@ public class GameState implements Serializable {
         }
         var winner = getCurrentPlayer();
         return Optional.of(winner != null ? winner : "AI");
+    }
+
+    public Color getColor() {
+        if(firstUserStarts) {
+            return firstUserTurn ? Color.White : Color.Black;
+        }
+        return firstUserTurn ? Color.Black : Color.White;
     }
 }
 

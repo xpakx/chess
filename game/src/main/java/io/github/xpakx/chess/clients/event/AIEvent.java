@@ -2,6 +2,7 @@ package io.github.xpakx.chess.clients.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.xpakx.chess.game.AIType;
+import io.github.xpakx.chess.game.dto.Color;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,4 +13,5 @@ public class AIEvent {
     private String gameState;
     private Integer nonCapturingMoves;
     private AIType type;
+    private Color color;
 }
