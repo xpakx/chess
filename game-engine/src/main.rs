@@ -1,5 +1,6 @@
 mod rabbit;
 mod config;
+mod engine;
 
 use crate::rabbit::lapin_listen;
 use serde::{Deserialize, Serialize};
