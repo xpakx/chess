@@ -30,7 +30,7 @@ pub fn generate_bit_board(fen_board: String) -> Result<BitBoard, String> {
     let mut black_queens = 0;
     let mut black_king = 0;
 
-    let mut index: u64 = 0b1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+    let mut index: u64 = 1 << 63;
 
     let board_def = fen_board.split(" ").next();
     let Some(board_def) = board_def else {
@@ -45,21 +45,22 @@ pub fn generate_bit_board(fen_board: String) -> Result<BitBoard, String> {
                 continue;
             }
             match a {
-                'p' => white_pawns = white_pawns & index,
-                'n' => white_knights = white_knights & index,
-                'b' => white_bishops = white_bishops & index,
-                'r' => white_rooks = white_rooks & index,
-                'q' => white_queens = white_queens & index,
-                'k' => white_king = white_king & index,
+                'P' => white_pawns = white_pawns | index,
+                'N' => white_knights = white_knights | index,
+                'B' => white_bishops = white_bishops | index,
+                'R' => white_rooks = white_rooks | index,
+                'Q' => white_queens = white_queens | index,
+                'K' => white_king = white_king | index,
 
-                'P' => black_pawns = black_pawns & index,
-                'N' => black_knights = black_knights & index,
-                'B' => black_bishops = black_bishops & index,
-                'R' => black_rooks = black_rooks & index,
-                'Q' => black_queens = black_queens & index,
-                'K' => black_king = black_king & index,
+                'p' => black_pawns = black_pawns | index,
+                'n' => black_knights = black_knights | index,
+                'b' => black_bishops = black_bishops | index,
+                'r' => black_rooks = black_rooks | index,
+                'q' => black_queens = black_queens | index,
+                'k' => black_king = black_king | index,
                 _ => return Err("".into()),
             }
+            index = index >> 1;
         }
     }
     Ok(BitBoard {
