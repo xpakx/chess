@@ -88,37 +88,37 @@ impl BitBoard {
             for _file in 0..8 {
                 let mut piece = None;
                 if self.white_pawns & index != 0  {
-                    piece = Some("P");
+                    piece = Some('P');
                 } else if self.white_knights & index != 0 {
-                    piece = Some("N");
+                    piece = Some('N');
                 } else if self.white_bishops & index != 0 {
-                    piece = Some("B");
+                    piece = Some('B');
                 } else if self.white_rooks & index != 0 {
-                    piece = Some("R");
+                    piece = Some('R');
                 } else if self.white_queens & index != 0 {
-                    piece = Some("Q");
+                    piece = Some('Q');
                 } else if self.white_king & index != 0 {
-                    piece = Some("K");
+                    piece = Some('K');
                 } else if self.black_pawns & index != 0  {
-                    piece = Some("p");
+                    piece = Some('p');
                 } else if self.black_knights & index != 0 {
-                    piece = Some("n");
+                    piece = Some('n');
                 } else if self.black_bishops & index != 0 {
-                    piece = Some("b");
+                    piece = Some('b');
                 } else if self.black_rooks & index != 0 {
-                    piece = Some("r");
+                    piece = Some('r');
                 } else if self.black_queens & index != 0 {
-                    piece = Some("q");
+                    piece = Some('q');
                 } else if self.black_king & index != 0 {
-                    piece = Some("k");
+                    piece = Some('k');
                 }
 
                 if let Some(piece) = piece {
                     if empty > 0 {
-                        result += &empty.to_string();
+                        result.push_str(&empty.to_string());
                     }
                     empty = 0;
-                    result += piece;
+                    result.push(piece);
                 } else {
                     empty += 1;
                 }
@@ -126,11 +126,11 @@ impl BitBoard {
                 index = index >> 1;
             }
             if empty > 0 {
-                result += &empty.to_string();
+                result.push_str(&empty.to_string());
             }
             empty = 0;
             if rank != 7 {
-                result += "/";
+                result.push('/');
             }
         }
 
