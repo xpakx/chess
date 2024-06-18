@@ -1,3 +1,5 @@
+use std::u64;
+
 use crate::Color;
 mod random_engine;
 pub mod rules;
@@ -148,7 +150,7 @@ impl BitBoard {
 
 pub trait Engine {
     fn get_name(&self) -> String;
-    fn get_move(&mut self, board: &BitBoard, color: &Color) -> String;
+    fn get_move(&mut self, board: &BitBoard, color: &Color) -> u64;
 }
 
 pub enum EngineType {

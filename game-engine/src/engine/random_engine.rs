@@ -16,7 +16,7 @@ impl Engine for RandomEngine {
         String::from("Random Engine")
     }
 
-    fn get_move(&mut self, _board: &BitBoard, _color: &Color) -> String {
-        "e4".into()
+    fn get_move(&mut self, _board: &BitBoard, _color: &Color) -> u64 {
+        0
     }
 }

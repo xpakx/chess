@@ -1,7 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::{rabbit::DESTINATION_EXCHANGE, Color};
+use crate::{engine::{generate_bit_board, get_engine, rules::{is_game_drawn, is_game_won, move_to_string}, EngineType}, rabbit::DESTINATION_EXCHANGE, Color};
 
 use super::move_consumer::EngineEvent;
 
@@ -70,12 +70,22 @@ struct AIEvent {
     color: Color,
 }
 
-fn process_ai_event(_message: AIEvent) -> EngineEvent {
+fn process_ai_event(message: AIEvent) -> EngineEvent {
+    let board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
+    let mut engine = get_engine(EngineType::Random);
+    let mov = engine.get_move(&board, &message.color);
+    let new_board = board.apply_move(mov, &message.color);
+    let mov_string = move_to_string(&board, mov);
+
+    let won = is_game_won(&new_board, &message.color);
+    let drawn = !won && is_game_drawn(&new_board, &message.color);
+    let finished = won || drawn;
+
     EngineEvent {
-        game_id: 0,
-        new_state: "".into(),
-        mov: "".into(),
-        legal: false,
-        finished: false,
+        game_id: message.game_id,
+        new_state: new_board.to_fen(),
+        mov: mov_string,
+        legal: true,
+        finished,
     }
 }
