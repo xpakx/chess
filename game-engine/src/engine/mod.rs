@@ -1,5 +1,6 @@
 use crate::Color;
 mod random_engine;
+pub mod rules;
 
 #[derive(Debug)]
 pub struct BitBoard {
@@ -138,6 +139,10 @@ impl BitBoard {
         }
 
         result
+    }
+
+    pub fn apply_move(&self, mov: u64, color: &Color) -> BitBoard {
+        BitBoard { white_pawns: 0, white_knights: 0, white_bishops: 0, white_rooks: 0, white_queens: 0, white_king: 0, black_pawns: 0, black_knights: 0, black_bishops: 0, black_rooks: 0, black_queens: 0, black_king: 0 }
     }
 }
 

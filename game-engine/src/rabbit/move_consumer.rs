@@ -1,8 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::{rabbit::DESTINATION_EXCHANGE, Color};
-
+use crate::{engine::{generate_bit_board, rules::{is_game_drawn, is_game_won, string_to_move, verify_move}}, rabbit::DESTINATION_EXCHANGE, Color};
 
 pub fn set_move_delegate(consumer: lapin::Consumer, channel: Channel) {
     consumer.set_delegate({
@@ -79,12 +78,25 @@ pub struct EngineEvent {
     pub finished: bool,
 }
 
-fn process_move(_message: MoveEvent) -> EngineEvent {
+fn process_move(message: MoveEvent) -> EngineEvent {
+    let board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
+    let mov = string_to_move(&board, message.mov.clone());
+    let legal = verify_move(&board, &message.color, mov);
+    let (new_state, finished) = match legal {
+        true => {
+            let new_board = board.apply_move(mov, &message.color);
+            let won = is_game_won(&new_board, &message.color);
+            let drawn = !won && is_game_drawn(&new_board, &message.color);
+            (new_board.to_fen(), won || drawn)
+        },
+        false => (message.game_state, false),
+    };
+
     EngineEvent {
-        game_id: 0,
-        new_state: "".into(),
-        mov: "".into(),
-        legal: false,
-        finished: false,
+        game_id: message.game_id,
+        new_state,
+        mov: message.mov,
+        legal,
+        finished,
     }
 }
