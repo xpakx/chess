@@ -1,3 +1,6 @@
+use crate::Color;
+mod random_engine;
+
 #[derive(Debug)]
 pub struct BitBoard {
     pub white_pawns: u64,
@@ -135,5 +138,20 @@ impl BitBoard {
         }
 
         result
+    }
+}
+
+pub trait Engine {
+    fn get_name(&self) -> String;
+    fn get_move(&mut self, board: &BitBoard, color: &Color) -> String;
+}
+
+pub enum EngineType {
+    Random,
+}
+
+pub fn get_engine(engine: EngineType) -> Box<dyn Engine> {
+    match engine {
+        EngineType::Random => Box::new(random_engine::RandomEngine::new()),
     }
 }
