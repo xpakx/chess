@@ -142,9 +142,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     ] = match;
 
     const piece = this.getPiece(pieceLetter);
-    const target = [this.charToNumber(destination.charCodeAt(0)), this.charToNumber(destination.charCodeAt(1))];
+    const target = [7-this.charToNumber(destination.charCodeAt(1)), this.charToNumber(destination.charCodeAt(0))];
     const startFile = disambiguationFile ? this.charToNumber(disambiguationFile.charCodeAt(0)) : undefined;
-    const startRank = disambiguationRank ? this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
+    const startRank = disambiguationRank ? 7-this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
     const start = this.findStart(target, color, piece, startFile, startRank); //TODO
     if (!start) {
       return;
@@ -190,7 +190,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   findStart(target: number[], color: "Black" | "White", piece: Piece, startFile?: number, startRank?: number): number[] | undefined {
     if(startFile && startRank) {
-      return [startFile, startRank];
+      return [startRank, startFile];
     }
 
     let type = `${color}${piece}`;
