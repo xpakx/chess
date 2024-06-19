@@ -145,7 +145,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     const target = [7-this.charToNumber(destination.charCodeAt(1)), this.charToNumber(destination.charCodeAt(0))];
     const startFile = disambiguationFile ? this.charToNumber(disambiguationFile.charCodeAt(0)) : undefined;
     const startRank = disambiguationRank ? 7-this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
-    const start = this.findStart(target, color, piece, startFile, startRank); //TODO
+    const start = this.findStart(target, color, piece, startFile, startRank, capture ? true : false); //TODO
     if (!start) {
       return;
     }
@@ -188,7 +188,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.invert = board.inverted;
   }
 
-  findStart(target: number[], color: "Black" | "White", piece: Piece, startFile?: number, startRank?: number): number[] | undefined {
+  findStart(target: number[], color: "Black" | "White", piece: Piece, startFile?: number, startRank?: number, capture: boolean = false): number[] | undefined {
     if(startFile && startRank) {
       return [startRank, startFile];
     }
@@ -218,10 +218,10 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     }
 
-    return candidates.find((c) => this.checkCapture(c, target, piece, color));
+    return candidates.find((c) => this.checkCapture(c, target, piece, color, capture));
   }
 
-  checkCapture(start: number[], target: number[], piece: Piece, color: "White" | "Black"): boolean {
+  checkCapture(start: number[], target: number[], piece: Piece, color: "White" | "Black", capture: boolean): boolean {
     if (piece == "Rook") {
       return this.checkRookCapture(start, target);
     } else if (piece == "Queen") {
@@ -233,7 +233,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else if (piece == "King") {
       return this.checkKingCapture(start, target);
     } else if (piece == "Pawn") {
-      return this.checkPawnCapture(start, target, color)
+      if (capture) {
+        return this.checkPawnCapture(start, target, color)
+      }
+      return this.checkPawnMove(start, target, color)
     }
     
     return false;
@@ -308,5 +311,17 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else {
       return dx === 1 && dy === -1;
     }
+  }
+
+  checkPawnMove(start: number[], target: number[], color: "White" | "Black"): boolean {
+    if (start[1] != target[1]) {
+      return false;
+    }
+    const startRank = color == "White" ? 6 : 1;
+    const dir = color == "White" ? -1 : 1;
+    if (startRank == start[0]) {
+      return start[0] + dir == target[0] || start[0] + 2*dir == target[0];
+    }
+    return start[0] + dir == target[0];
   }
 }
