@@ -10,5 +10,6 @@ export interface Move {
     start: number[];
 
     promotion?: Piece;
+    enpassant: boolean,
 
 }

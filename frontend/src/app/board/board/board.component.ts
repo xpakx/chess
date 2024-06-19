@@ -123,7 +123,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
 
   parseMove(move: String, color: "Black" | "White"): Move | undefined {
-    const pattern = /([KQRBN]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(=[KQRBN])?([+#]?)/;
+    const pattern = /([KQRBN]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(=[KQRBN])?([+#]?)( e\.p\.)?/;
     const match = move.match(pattern);
 
     if (!match) {
@@ -137,7 +137,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       capture,
       destination,
       promotion,
-      check
+      check,
+      enpassant
     ] = match;
 
     const piece = this.getPiece(pieceLetter);
@@ -148,6 +149,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (!start) {
       return;
     }
+    const isEnpassant = enpassant ? true : false;
 
     return {
       piece: piece,
@@ -157,6 +159,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       mate: check && check == "#" ? true : false,
       target: target,
       start: start,
+      enpassant: isEnpassant,
     }
   }
 
