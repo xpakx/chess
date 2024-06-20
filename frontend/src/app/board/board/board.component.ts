@@ -8,6 +8,7 @@ import { MoveMessage } from '../dto/move-message';
 import { BoardEvent } from '../dto/board-event';
 import { Move } from '../dto/move';
 import { Piece } from '../dto/piece';
+import { Castling } from '../dto/castling';
 
 @Component({
   selector: 'app-board',
@@ -107,13 +108,25 @@ export class BoardComponent implements OnInit, OnDestroy {
     // TODO
     const color = "White"; // TODO
 
-    //  TODO: castling
+    if(message.move.startsWith("O")) {
+      let move = this.parseCastling(message.move, color);
+      if (!move) { 
+        return;
+      }
+
+      let king = this.board[move.kingMove.start[0]][move.kingMove.start[1]];
+      this.board[move.kingMove.start[0]][move.kingMove.start[1]] = "Empty";
+      this.board[move.kingMove.target[0]][move.kingMove.target[1]] = king;
+
+      let rook = this.board[move.rookMove.start[0]][move.rookMove.start[1]];
+      this.board[move.rookMove.start[0]][move.rookMove.start[1]] = "Empty";
+      this.board[move.rookMove.target[0]][move.rookMove.target[1]] = rook;
+      return;
+    }
     let move = this.parseMove(message.move, color);
     if(!move) {
       return;
     }
-
-    console.log(move);
 
     this.board[move.start[0]][move.start[1]] = "Empty";
     const pieceAfterMove = `${color}${move.promotion ? move.promotion : move.piece}` as Field;
@@ -323,5 +336,53 @@ export class BoardComponent implements OnInit, OnDestroy {
       return start[0] + dir == target[0] || start[0] + 2*dir == target[0];
     }
     return start[0] + dir == target[0];
+  }
+
+
+  parseCastling(move: String, color: "Black" | "White"): Castling | undefined {
+    const pattern = /(O-O(-O)?)([+#]?)/;
+    const match = move.match(pattern);
+
+    if (!match) {
+      console.log("No match")
+      return undefined;
+    }
+
+    const [_,
+      _shortCastle,
+      longCastle,
+      check,
+    ] = match;
+    const isLongCastle = longCastle ? true : false;
+    const isCheck = check ? true : false;
+    const isMate = check && check == "#" ? true : false;
+
+    const rookStart = [0, 0];
+    const rookTarget = [0, 0];
+    const kingStart = [0, 0];
+    const kingTarget = [0, 0];
+
+
+    return {
+      kingMove: {
+        piece: "King",
+        capture: false,
+        check: isCheck,
+        mate: isMate,
+        enpassant: false,
+        start: kingStart,
+        target: kingTarget,
+      },
+      rookMove: {
+        piece: "Rook",
+        capture: false,
+        check: isCheck,
+        mate: isMate,
+        enpassant: false,
+        start: rookStart,
+        target: rookTarget,
+      },
+    };
+
   }
 }
