@@ -357,29 +357,18 @@ export class BoardComponent implements OnInit, OnDestroy {
     const isCheck = check ? true : false;
     const isMate = check && check == "#" ? true : false;
 
-    if (color == "White" && !isLongCastle) {
-      return this.generateCastling([7, 7], [7, 5], [7, 4], [7, 6], isCheck, isMate);
-    }
-    if (color == "White" && isLongCastle) {
-      return this.generateCastling([7, 0], [7, 3], [7, 4], [7, 2], isCheck, isMate);
-    }
-    if (color == "Black" && !isLongCastle) {
-      return this.generateCastling([0, 7], [0, 5], [0, 4], [0, 6], isCheck, isMate);
-    }
-    if (color == "Black" && isLongCastle) {
-      return this.generateCastling([0, 0], [0, 3], [0, 4], [0, 3], isCheck, isMate);
-    }
+    const rank = color == "White" ? 7 : 0;
+    const kingStart = [rank, 4];
+    const kingTarget = [rank, isLongCastle ? 2 : 6];
+    const rookStart = [rank, isLongCastle ? 0 : 7];
+    const rookTarget = [rank, isLongCastle ? 3 : 5];
 
-    return undefined;
-  }
-
-  generateCastling(rookStart: number[], rookTarget: number[], kingStart: number[], kingTarget: number[], check: boolean, mate: boolean): Castling {
     return {
       kingMove: {
         piece: "King",
         capture: false,
-        check: check,
-        mate: mate,
+        check: isCheck,
+        mate: isMate,
         enpassant: false,
         start: kingStart,
         target: kingTarget,
@@ -387,8 +376,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       rookMove: {
         piece: "Rook",
         capture: false,
-        check: check,
-        mate: mate,
+        check: isCheck,
+        mate: isMate,
         enpassant: false,
         start: rookStart,
         target: rookTarget,
