@@ -34,6 +34,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   invert: boolean = false;
   _gameId: number | undefined = undefined;
   finished: boolean = false;
+  lastMove: number[] = [];
 
   private moveSub?: Subscription;
   private boardSub?: Subscription;
@@ -130,7 +131,23 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.board[move.start[0]][move.start[1]] = "Empty";
     const pieceAfterMove = `${message.color}${move.promotion ? move.promotion : move.piece}` as Field;
     this.board[move.target[0]][move.target[1]] = pieceAfterMove;
-    // TODO: if enpassant…
+
+
+    if (move.piece != "Pawn") {
+      this.lastMove = [];
+      return;
+    }
+
+    // TODO: enpassant
+    if (move.enpassant && this.lastMove.length == 2) {
+      this.board[this.lastMove[0]][this.lastMove[1]] = "Empty";
+    }
+    const dx = Math.abs(move.start[0] - move.target[0]);
+    if (dx == 2) {
+      this.lastMove = move.target;
+    } else {
+      this.lastMove = [];
+    }
   }
 
 
