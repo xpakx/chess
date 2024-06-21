@@ -106,10 +106,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   makeMove(message: MoveMessage) {
     // TODO
-    const color = "White"; // TODO
 
     if(message.move.startsWith("O")) {
-      let move = this.parseCastling(message.move, color);
+      let move = this.parseCastling(message.move, message.color);
       if (!move) { 
         return;
       }
@@ -123,13 +122,13 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.board[move.rookMove.target[0]][move.rookMove.target[1]] = rook;
       return;
     }
-    let move = this.parseMove(message.move, color);
+    let move = this.parseMove(message.move, message.color);
     if(!move) {
       return;
     }
 
     this.board[move.start[0]][move.start[1]] = "Empty";
-    const pieceAfterMove = `${color}${move.promotion ? move.promotion : move.piece}` as Field;
+    const pieceAfterMove = `${message.color}${move.promotion ? move.promotion : move.piece}` as Field;
     this.board[move.target[0]][move.target[1]] = pieceAfterMove;
     // TODO: if enpassant…
   }

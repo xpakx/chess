@@ -8,4 +8,5 @@ export interface MoveMessage {
     finished: boolean ;
     won: boolean ;
     winner?: String;
+    color: "White" | "Black";
 }
