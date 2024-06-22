@@ -3,7 +3,7 @@
         <div *ngFor="let cell of row; index as j" 
         class="cell" class="{{cell | field}} {{classList[i][j]}}" 
 
-        [draggable]="cell != 'Empty'"
+        [draggable]="color && cell.startsWith(color)"
         (dragstart)="onDragStart($event, i, j)"
         (dragend)="onDragEnd($event, i, j)"
         (dragover)="onDragOver($event, i, j)"

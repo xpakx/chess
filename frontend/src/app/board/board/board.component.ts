@@ -35,6 +35,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   _gameId: number | undefined = undefined;
   finished: boolean = false;
   lastMove: number[] = [];
+  color?: "White" | "Black";
 
   private moveSub?: Subscription;
   private boardSub?: Subscription;
@@ -67,6 +68,10 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   onDragStart(event: DragEvent, i: number, j: number) {
+    if (!this.color || !this.board[i][j].startsWith(this.color)) {
+      event.preventDefault();
+      return;
+    }
     this.toast.createToast({id: `dragging${i}${j}`, type: "info", message:`Dragging ${i}, ${j}`});
     this.classList[i][j] = "dragging";
     if (!this.ghost) {
@@ -215,6 +220,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   updateBoard(board: BoardEvent) {
     this.board = board.board.state;
     this.invert = board.inverted;
+    this.color = board.color;
   }
 
   findStart(target: number[], color: "Black" | "White", piece: Piece, startFile?: number, startRank?: number, capture: boolean = false): number[] | undefined {
