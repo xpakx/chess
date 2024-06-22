@@ -126,15 +126,17 @@ export class WebsocketService {
   processBoard(message: BoardMessage) {
     const username = localStorage.getItem("username");
     let inverted = false;
+    let color: "Black" | "White" | undefined = undefined;
     if(username) {
       if(message.username1 == username) {
         inverted = !message.firstUserStarts;
       } else if(message.username2 == username) {
         inverted = message.firstUserStarts;
       }
+      color = inverted ? "Black" : "White";
     }
 
-    this.boardSubject.next({board: message, inverted: inverted});
+    this.boardSubject.next({board: message, inverted: inverted, color: color});
   }
 
   subscribeChat(gameId: number) {
