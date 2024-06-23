@@ -73,7 +73,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       event.preventDefault();
       return;
     }
-    this.toast.createToast({id: `dragging${i}${j}`, type: "info", message:`Dragging ${i}, ${j}`});
     this.classList[i][j] = "dragging";
     if (!this.ghost) {
       return;
@@ -85,16 +84,15 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   onDragEnd(event: DragEvent, i: number, j: number) {
-    this.toast.createToast({id: `dragend${i}${j}`, type: "info", message:`Stop dragging ${i}, ${j}`});
     this.classList[i][j] = "";
     this.dragged = undefined;
   }
 
   onDragOver(event: DragEvent, i: number, j: number) {
+    event.preventDefault();
   }
 
   onDrop(event: DragEvent, i: number, j: number) {
-    this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`Stop dragging ${i}, ${j}`});
     this.classList[i][j] = "";
     event.preventDefault();
     if (!this.dragged || !this.color) {
