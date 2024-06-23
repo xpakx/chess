@@ -35,6 +35,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   _gameId: number | undefined = undefined;
   finished: boolean = false;
   lastMove: number[] = [];
+  dragged?: number[];
   color?: "White" | "Black";
 
   private moveSub?: Subscription;
@@ -77,6 +78,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (!this.ghost) {
       return;
     }
+    this.dragged = [i, j];
     this.ghostClass = this.fieldPipe.transform(this.board[i][j]);
     var offset = this.ghost.nativeElement.offsetWidth/2;
     event.dataTransfer?.setDragImage(this.ghost.nativeElement, offset, offset);
@@ -85,6 +87,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   onDragEnd(event: DragEvent, i: number, j: number) {
     this.toast.createToast({id: `dragend${i}${j}`, type: "info", message:`Stop dragging ${i}, ${j}`});
     this.classList[i][j] = "";
+    this.dragged = undefined;
   }
 
   onDragOver(event: DragEvent, i: number, j: number) {
@@ -94,6 +97,19 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`Stop dragging ${i}, ${j}`});
     this.classList[i][j] = "";
     event.preventDefault();
+    if (!this.dragged || !this.color) {
+      return;
+    }
+    const start = [this.dragged[0], this.dragged[1]];
+    const end = [i, j];
+    const capture = this.board[i][j] != "Empty"; // TODO: en passant, castling
+    const piece = this.board[i][j].replace(this.color, "") as Piece;
+
+    let candidates = this.findCandidates(start, end, this.color, piece, capture);
+    const sameFile = candidates.find((a) => a[0] == start[0] && a[1] != start[1]);
+    const sameRank = candidates.find((a) => a[1] == start[1] && a[0] != start[0]);
+
+    this.dragged = undefined;
   }
 
   onDragEnter(event: DragEvent, i: number, j: number) {
@@ -405,5 +421,20 @@ export class BoardComponent implements OnInit, OnDestroy {
         target: rookTarget,
       },
     };
+  }
+
+  findCandidates(start: number[], target: number[], color: "Black" | "White", piece: Piece, capture: boolean = false): number[][] {
+    let type = `${color}${piece}`;
+    let candidates: number[][] = [];
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (this.board[i][j] == type) {
+          candidates.push([i, j]);
+        }
+      }
+    }
+
+    return candidates.filter((c) => this.checkCapture(c, target, piece, color, capture));
   }
 }
