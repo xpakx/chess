@@ -109,6 +109,15 @@ export class BoardComponent implements OnInit, OnDestroy {
     const sameFile = candidates.find((a) => a[0] == start[0] && a[1] != start[1]);
     const sameRank = candidates.find((a) => a[1] == start[1] && a[0] != start[0]);
 
+    const startFile = sameFile ? String.fromCharCode(this.letterToCharCode(start[1])) : "";
+    const startRank = sameRank ? String.fromCharCode(this.numberToCharCode(start[0])) : "";
+    const captureString = capture ? "x" : "";
+    const targetFile = String.fromCharCode(this.letterToCharCode(end[1]));
+    const targetRank = String.fromCharCode(this.numberToCharCode(end[0]));
+
+    const moveString = "".concat(startFile, startRank, captureString, targetFile, targetRank);
+    this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`move ${moveString}`});
+
     this.dragged = undefined;
   }
 
@@ -436,5 +445,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     return candidates.filter((c) => this.checkCapture(c, target, piece, color, capture));
+  }
+
+  numberToCharCode(num: number): number {
+    return (7- num) + 49;
+  }
+
+  letterToCharCode(num: number): number {
+    return num + 97;
   }
 }
