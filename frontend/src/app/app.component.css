@@ -41,8 +41,12 @@
     .container {
         overflow: visible;
     }
-}
 
+    .content :nth-child(2) {
+        margin-left: 0;
+    }
+}
+    
 .modal-overlay {
     position: fixed;
     top: 0;
