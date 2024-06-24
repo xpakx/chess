@@ -101,19 +101,20 @@ export class BoardComponent implements OnInit, OnDestroy {
     const start = [this.dragged[0], this.dragged[1]];
     const end = [i, j];
     const capture = this.board[i][j] != "Empty"; // TODO: en passant, castling
-    const piece = this.board[i][j].replace(this.color, "") as Piece;
+    const piece = this.board[start[0]][start[1]].replace(this.color, "") as Piece;
 
     let candidates = this.findCandidates(start, end, this.color, piece, capture);
     const sameFile = candidates.find((a) => a[0] == start[0] && a[1] != start[1]);
     const sameRank = candidates.find((a) => a[1] == start[1] && a[0] != start[0]);
 
+    const pieceLetter = this.getPieceLetter(piece);
     const startFile = sameFile ? String.fromCharCode(this.letterToCharCode(start[1])) : "";
     const startRank = sameRank ? String.fromCharCode(this.numberToCharCode(start[0])) : "";
     const captureString = capture ? "x" : "";
     const targetFile = String.fromCharCode(this.letterToCharCode(end[1]));
     const targetRank = String.fromCharCode(this.numberToCharCode(end[0]));
 
-    const moveString = "".concat(startFile, startRank, captureString, targetFile, targetRank);
+    const moveString = "".concat(pieceLetter, startFile, startRank, captureString, targetFile, targetRank);
     this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`move ${moveString}`});
 
     this.dragged = undefined;
@@ -228,6 +229,17 @@ export class BoardComponent implements OnInit, OnDestroy {
       case "B": return "Bishop";
       case "N": return "Knight";
       default: return "Pawn";
+    }
+  }
+
+  getPieceLetter(piece: Piece): string {
+    switch (piece) {
+      case "King": return "K";
+      case "Queen": return "Q";
+      case "Rook": return "R";
+      case "Bishop": return "B";
+      case "Knight": return "N";
+      default: return "";
     }
   }
 
