@@ -103,6 +103,19 @@ export class BoardComponent implements OnInit, OnDestroy {
     const capture = this.board[i][j] != "Empty"; // TODO: en passant, castling
     const piece = this.board[start[0]][start[1]].replace(this.color, "") as Piece;
 
+    if (piece == "King") {
+      const rank = this.color == "White" ? 7 : 0;
+      if (start[0] == rank && start[1] == 4 && end[0] == rank) {
+        if (end[1] == 2) {
+          this.toast.createToast({ id: `drop${i}${j}`, type: "info", message: `move O-O-O` });
+          return;
+        } else if (end[1] == 6) {
+          this.toast.createToast({ id: `drop${i}${j}`, type: "info", message: `move O-O` });
+          return;
+        }
+      }
+    }
+
     let candidates = this.findCandidates(start, end, this.color, piece, capture);
     const sameFile = candidates.find((a) => a[0] == start[0] && a[1] != start[1]);
     const sameRank = candidates.find((a) => a[1] == start[1] && a[0] != start[0]);
