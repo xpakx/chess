@@ -17,20 +17,38 @@ const EAST: usize = 1;
 const SOUTH: usize = 2;
 const WEST: usize = 3;
 
+const NORTHWEST: usize = 4;
+const NORTHEAST: usize = 5;
+const SOUTHEAST: usize = 6;
+const SOUTHWEST: usize = 7;
+
 pub static ROOK_RAYS: Lazy<[[u64; 64]; 4]> = Lazy::new(|| {
     let mut rays = [[0u64; 64]; 4];
 
     for square in 0..64 {
-        rays[NORTH][square] = generate_rook_ray(square, NORTH);
-        rays[EAST][square] = generate_rook_ray(square, EAST);
-        rays[SOUTH][square] = generate_rook_ray(square, SOUTH);
-        rays[WEST][square] = generate_rook_ray(square, WEST);
+        rays[NORTH][square] = generate_ray(square, NORTH);
+        rays[EAST][square] = generate_ray(square, EAST);
+        rays[SOUTH][square] = generate_ray(square, SOUTH);
+        rays[WEST][square] = generate_ray(square, WEST);
     }
 
     rays
 });
 
-fn generate_rook_ray(square: usize, direction: usize) -> u64 {
+pub static BISHOP_RAYS: Lazy<[[u64; 64]; 4]> = Lazy::new(|| {
+    let mut rays = [[0u64; 64]; 4];
+
+    for square in 0..64 {
+        rays[NORTHWEST-4][square] = generate_ray(square, NORTHWEST);
+        rays[NORTHEAST-4][square] = generate_ray(square, NORTHEAST);
+        rays[SOUTHEAST-4][square] = generate_ray(square, SOUTHEAST);
+        rays[SOUTHWEST-4][square] = generate_ray(square, SOUTHWEST);
+    }
+
+    rays
+});
+
+fn generate_ray(square: usize, direction: usize) -> u64 {
     let mut ray: u64 = 0;
     let mut sq: u64 = 1 << square;
     while sq != 0 {
@@ -39,6 +57,10 @@ fn generate_rook_ray(square: usize, direction: usize) -> u64 {
             SOUTH => sq >> 8,
             EAST => sq << 1 & NOT_H_FILE,
             WEST => sq >> 1 & NOT_A_FILE,
+            NORTHWEST => sq << 7 & NOT_A_FILE,
+            NORTHEAST => sq << 9 & NOT_H_FILE,
+            SOUTHEAST => sq >> 7 & NOT_H_FILE,
+            SOUTHWEST => sq >> 9 & NOT_A_FILE,
             _ => panic!("error while constructing ray"),
         };
         ray = ray | sq;
