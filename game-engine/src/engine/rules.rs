@@ -207,6 +207,52 @@ pub fn get_rook_moves(rook: &u64, occupied: &u64) -> u64 {
     result
 }
 
+pub fn get_bishop_moves(bishop: &u64, occupied: &u64) -> u64 {
+    let mut result: u64 = 0;
+    let sq = bishop.trailing_zeros() as usize;
+
+    let ne_attack = BISHOP_RAYS[NORTHEAST-4][sq];
+    let ne_blocker = ne_attack & occupied;
+    if ne_blocker != 0 {
+        let block_sq = ne_blocker.trailing_zeros() as usize;
+        let attacks = ne_attack ^ BISHOP_RAYS[NORTHEAST-4][block_sq];
+        result |= attacks;
+    } else {
+        result |= ne_attack;
+    }
+    
+    let nw_attack = BISHOP_RAYS[NORTHWEST-4][sq];
+    let ne_blocker = nw_attack & occupied;
+    if ne_blocker != 0 {
+        let block_sq = ne_blocker.trailing_zeros() as usize;
+        let attacks = nw_attack ^ BISHOP_RAYS[NORTHWEST-4][block_sq];
+        result |= attacks;
+    } else {
+        result |= nw_attack;
+    }
+
+    let se_attack = BISHOP_RAYS[SOUTHEAST-4][sq];
+    let se_blocker = se_attack & occupied;
+    if se_blocker != 0 {
+        let block_sq = (63 - se_blocker.leading_zeros()) as usize;
+        let attacks = se_attack ^ BISHOP_RAYS[SOUTHEAST-4][block_sq];
+        result |= attacks;
+    } else {
+        result |= se_attack;
+    }
+
+    let sw_attack = BISHOP_RAYS[SOUTHWEST-4][sq];
+    let sw_blocker = sw_attack & occupied;
+    if sw_blocker != 0 {
+        let block_sq = (63 - sw_blocker.leading_zeros()) as usize;
+        let attacks = sw_attack ^ BISHOP_RAYS[SOUTHWEST-4][block_sq];
+        result |= attacks;
+    } else {
+        result |= sw_attack;
+    }
+    result
+}
+
 pub fn verify_move(board: &BitBoard, color: &Color, mov: u64) -> bool {
     true
 }

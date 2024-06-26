@@ -3,7 +3,7 @@ mod config;
 mod engine;
 
 use crate::rabbit::lapin_listen;
-use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves};
+use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves, get_bishop_moves};
 use serde::{Deserialize, Serialize};
 
 #[tokio::main]
@@ -26,8 +26,14 @@ async fn main() {
     let occupied = (1 << (6 * 8 + 4)) | (1 << (4 * 8 + 6));
 
     let moves = get_rook_moves(&rook, &occupied);
-
     println!("Rook moves:");
+    print_bitboard(moves);
+
+    let bishop = 1 << (4 * 8 + 4);
+    let occupied = (1 << (6 * 8 + 6)) | (1 << (2 * 8 + 2));
+    let moves = get_bishop_moves(&bishop, &occupied);
+
+    println!("Bishop moves:");
     print_bitboard(moves);
 
     let config = config::get_config();
