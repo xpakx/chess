@@ -161,6 +161,52 @@ pub fn get_black_pawn_west_attacks(pawns: &u64, targets: &u64) -> u64 {
     (pawns >> 9) & NOT_H_FILE & targets
 }
 
+pub fn get_rook_moves(rook: &u64, occupied: &u64) -> u64 {
+    let mut result: u64 = 0;
+    let sq = rook.trailing_zeros() as usize;
+
+    let north_attack = ROOK_RAYS[NORTH][sq];
+    let north_blocker = north_attack & occupied;
+    if north_blocker != 0 {
+        let block_sq = north_blocker.trailing_zeros() as usize;
+        let attacks = north_attack ^ ROOK_RAYS[NORTH][block_sq];
+        result |= attacks;
+    } else {
+        result |= north_attack;
+    }
+    
+    let east_attack = ROOK_RAYS[EAST][sq];
+    let east_blocker = east_attack & occupied;
+    if east_blocker != 0 {
+        let block_sq = east_blocker.trailing_zeros() as usize;
+        let attacks = east_attack ^ ROOK_RAYS[EAST][block_sq];
+        result |= attacks;
+    } else {
+        result |= east_attack;
+    }
+
+    let south_attack = ROOK_RAYS[SOUTH][sq];
+    let south_blocker = south_attack & occupied;
+    if south_blocker != 0 {
+        let block_sq = (63 - south_blocker.leading_zeros()) as usize;
+        let attacks = south_attack ^ ROOK_RAYS[SOUTH][block_sq];
+        result |= attacks;
+    } else {
+        result |= south_attack;
+    }
+
+    let west_attack = ROOK_RAYS[WEST][sq];
+    let west_blocker = west_attack & occupied;
+    if west_blocker != 0 {
+        let block_sq = (63 - west_blocker.leading_zeros()) as usize;
+        let attacks = west_attack ^ ROOK_RAYS[WEST][block_sq];
+        result |= attacks;
+    } else {
+        result |= west_attack;
+    }
+    result
+}
+
 pub fn verify_move(board: &BitBoard, color: &Color, mov: u64) -> bool {
     true
 }

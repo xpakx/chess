@@ -3,7 +3,7 @@ mod config;
 mod engine;
 
 use crate::rabbit::lapin_listen;
-use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS};
+use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves};
 use serde::{Deserialize, Serialize};
 
 #[tokio::main]
@@ -22,6 +22,13 @@ async fn main() {
         println!("\nRays in {} direction from d4:", direction);
         print_bitboard(BISHOP_RAYS[i][square]);
     }
+    let rook = 1 << (4 * 8 + 4);
+    let occupied = (1 << (6 * 8 + 4)) | (1 << (4 * 8 + 6));
+
+    let moves = get_rook_moves(&rook, &occupied);
+
+    println!("Rook moves:");
+    print_bitboard(moves);
 
     let config = config::get_config();
     let mut cfg = deadpool_lapin::Config::default();
@@ -35,7 +42,6 @@ pub enum Color {
     White,
     Red,
 }
-
 
 fn print_bitboard(bitboard: u64) {
     for rank in (0..8).rev() {
