@@ -443,6 +443,7 @@ dependencies = [
  "deadpool",
  "deadpool-lapin",
  "lapin",
+ "once_cell",
  "serde",
  "serde_json",
  "tokio",
