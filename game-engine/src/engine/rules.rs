@@ -1,3 +1,5 @@
+use once_cell::sync::Lazy;
+
 use crate::Color;
 
 use super::BitBoard;
@@ -8,6 +10,41 @@ const NOT_H_FILE: u64 =  0b11111110_11111110_11111110_11111110_11111110_11111110
 const NOT_GH_FILE: u64 = 0b11111100_11111100_11111100_11111100_11111100_11111100_11111100_11111100;
 const RANK_4: u64 =      0b00000000_00000000_00000000_00000000_11111111_00000000_00000000_00000000;
 const RANK_5: u64 =      0b00000000_00000000_00000000_11111111_00000000_00000000_00000000_00000000;
+
+
+const NORTH: usize = 0;
+const EAST: usize = 1;
+const SOUTH: usize = 2;
+const WEST: usize = 3;
+
+pub static ROOK_RAYS: Lazy<[[u64; 64]; 4]> = Lazy::new(|| {
+    let mut rays = [[0u64; 64]; 4];
+
+    for square in 0..64 {
+        rays[NORTH][square] = generate_rook_ray(square, NORTH);
+        rays[EAST][square] = generate_rook_ray(square, EAST);
+        rays[SOUTH][square] = generate_rook_ray(square, SOUTH);
+        rays[WEST][square] = generate_rook_ray(square, WEST);
+    }
+
+    rays
+});
+
+fn generate_rook_ray(square: usize, direction: usize) -> u64 {
+    let mut ray: u64 = 0;
+    let mut sq: u64 = 1 << square;
+    while sq != 0 {
+        sq = match direction {
+            NORTH => sq << 8,
+            SOUTH => sq >> 8,
+            EAST => sq << 1 & NOT_H_FILE,
+            WEST => sq >> 1 & NOT_A_FILE,
+            _ => panic!("error while constructing ray"),
+        };
+        ray = ray | sq;
+    }
+    ray
+}
 
 pub struct Move {
     from: u8,
