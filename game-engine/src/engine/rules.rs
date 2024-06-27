@@ -161,7 +161,7 @@ pub fn get_black_pawn_west_attacks(pawns: &u64, targets: &u64) -> u64 {
     (pawns >> 9) & NOT_H_FILE & targets
 }
 
-pub fn get_rook_moves(rook: &u64, occupied: &u64) -> u64 {
+pub fn get_rook_moves(rook: &u64, occupied: &u64, friendly: &u64) -> u64 {
     let mut result: u64 = 0;
     let sq = rook.trailing_zeros() as usize;
 
@@ -204,10 +204,10 @@ pub fn get_rook_moves(rook: &u64, occupied: &u64) -> u64 {
     } else {
         result |= west_attack;
     }
-    result
+    result ^ (result & friendly)
 }
 
-pub fn get_bishop_moves(bishop: &u64, occupied: &u64) -> u64 {
+pub fn get_bishop_moves(bishop: &u64, occupied: &u64, friendly: &u64) -> u64 {
     let mut result: u64 = 0;
     let sq = bishop.trailing_zeros() as usize;
 
@@ -250,7 +250,7 @@ pub fn get_bishop_moves(bishop: &u64, occupied: &u64) -> u64 {
     } else {
         result |= sw_attack;
     }
-    result
+    result ^ (result & friendly)
 }
 
 pub fn verify_move(board: &BitBoard, color: &Color, mov: u64) -> bool {

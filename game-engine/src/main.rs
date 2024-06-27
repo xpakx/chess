@@ -25,13 +25,13 @@ async fn main() {
     let rook = 1 << (4 * 8 + 4);
     let occupied = (1 << (6 * 8 + 4)) | (1 << (4 * 8 + 6));
 
-    let moves = get_rook_moves(&rook, &occupied);
+    let moves = get_rook_moves(&rook, &occupied, &0);
     println!("Rook moves:");
     print_bitboard(moves);
 
     let bishop = 1 << (4 * 8 + 4);
     let occupied = (1 << (6 * 8 + 6)) | (1 << (2 * 8 + 2));
-    let moves = get_bishop_moves(&bishop, &occupied);
+    let moves = get_bishop_moves(&bishop, &occupied, &0);
 
     println!("Bishop moves:");
     print_bitboard(moves);
