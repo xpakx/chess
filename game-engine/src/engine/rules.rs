@@ -85,7 +85,8 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
     };
     let mut result = Vec::new();
     let mut current = knights;
-    let all_pieces = pawns | knights | bishops | rooks | queens | kings | enemy;
+    let friendly = pawns | knights | bishops | rooks | queens | kings;
+    let all_pieces = friendly | enemy;
     let empty = !all_pieces;
     while current != 0 {
         let from = current.trailing_zeros() as u8;
@@ -98,6 +99,33 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
         }
     }
+
+    current = rooks | queens;
+    while current != 0 {
+        let from = current.trailing_zeros() as u8;
+        let rook = 1 << from;
+        current = current & !rook;
+        let mut moves = get_rook_moves(&rook, &all_pieces, &friendly);
+        while moves != 0 {
+            let to = moves.trailing_zeros() as u8;
+            moves = moves & !(1 << to);
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+    }
+
+    current = bishops | queens;
+    while current != 0 {
+        let from = current.trailing_zeros() as u8;
+        let bishop = 1 << from;
+        current = current & !bishop;
+        let mut moves = get_bishop_moves(&bishop, &all_pieces, &friendly);
+        while moves != 0 {
+            let to = moves.trailing_zeros() as u8;
+            moves = moves & !(1 << to);
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+    }
+
     result
 }
 
