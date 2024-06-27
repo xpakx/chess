@@ -77,7 +77,7 @@ pub struct Move {
 }
 
 pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
-    let (pawns, knights, bishops, rooks, queens, kings, enemy) = match color {
+    let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
         Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
                        board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
@@ -85,7 +85,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
     };
     let mut result = Vec::new();
     let mut current = knights;
-    let friendly = pawns | knights | bishops | rooks | queens | kings;
+    let friendly = pawns | knights | bishops | rooks | queens | king;
     let all_pieces = friendly | enemy;
     let empty = !all_pieces;
     while current != 0 {
@@ -124,6 +124,14 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             moves = moves & !(1 << to);
             result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
         }
+    }
+
+    let from = king.trailing_zeros() as u8;
+    let mut moves = get_king_moves(&king, &(empty | enemy));
+    while moves != 0 {
+        let to = moves.trailing_zeros() as u8;
+        moves = moves & !(1 << to);
+        result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
     }
 
     result
