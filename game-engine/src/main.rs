@@ -53,6 +53,9 @@ async fn main() {
         white_rooks:   0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_10000001,
     };
 
+    println!("Board:");
+    print_board(&board);
+
     let moves = get_possible_moves(&board, &Color::White);
     println!("{} moves:", moves.len());
     let moves = get_possible_moves(&board, &Color::Red);
@@ -77,6 +80,42 @@ fn print_bitboard(bitboard: u64) {
             let square = rank * 8 + file;
             if bitboard & (1 << square) != 0 {
                 print!("1 ");
+            } else {
+                print!(". ");
+            }
+        }
+        println!();
+    }
+}
+
+fn print_board(bitboard: &BitBoard) {
+    for rank in (0..8).rev() {
+        for file in 0..8 {
+            let square = rank * 8 + file;
+            if bitboard.black_pawns & (1 << square) != 0 {
+                print!("♟ ");
+            } else if bitboard.black_bishops & (1 << square) != 0 {
+                print!("♝ ");
+            } else if bitboard.black_knights & (1 << square) != 0 {
+                print!("♞ ");
+            } else if bitboard.black_rooks & (1 << square) != 0 {
+                print!("♜ ");
+            } else if bitboard.black_queens & (1 << square) != 0 {
+                print!("♛ ");
+            } else if bitboard.black_king & (1 << square) != 0 {
+                print!("♚ ");
+            } else if bitboard.white_pawns & (1 << square) != 0 {
+                print!("♙ ");
+            } else if bitboard.white_bishops & (1 << square) != 0 {
+                print!("♗ ");
+            } else if bitboard.white_knights & (1 << square) != 0 {
+                print!("♘ ");
+            } else if bitboard.white_rooks & (1 << square) != 0 {
+                print!("♖ ");
+            } else if bitboard.white_queens & (1 << square) != 0 {
+                print!("♕ ");
+            } else if bitboard.white_king & (1 << square) != 0 {
+                print!("♔ ");
             } else {
                 print!(". ");
             }
