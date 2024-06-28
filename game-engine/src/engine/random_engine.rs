@@ -18,7 +18,7 @@ impl Engine for RandomEngine {
 
     fn get_move(&mut self, _board: &BitBoard, _color: &Color) -> Move {
         Move {
-            from: 0, to: 0, promotion: false, capture: false, castling: false, piece: Piece::Pawn,
+            from: 0, to: 0, promotion: false, capture: None, castling: false, piece: Piece::Pawn,
         }
     }
 }

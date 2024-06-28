@@ -2,7 +2,7 @@ use std::u64;
 
 use crate::Color;
 
-use self::rules::Move;
+use self::rules::{Move, Piece};
 mod random_engine;
 pub mod rules;
 
@@ -143,6 +143,53 @@ impl BitBoard {
         }
 
         result
+    }
+
+    pub fn check_capture(&self, target: &u64, color: &Color) -> Option<Piece> {
+        match color {
+            Color::Red => {
+               if self.white_pawns & target != 0 {
+                   return Some(Piece::Pawn)
+               }
+               if self.white_knights & target != 0 {
+                   return Some(Piece::Knight)
+               }
+               if self.white_bishops & target != 0 {
+                   return Some(Piece::Bishop)
+               }
+               if self.white_rooks & target != 0 {
+                   return Some(Piece::Rook)
+               }
+               if self.white_queens & target != 0 {
+                   return Some(Piece::Queen)
+               }
+               if self.white_king & target != 0 {
+                   return Some(Piece::King) // shouldn't happen
+               }
+               None
+            },
+            Color::White => {
+               if self.black_pawns & target != 0 {
+                   return Some(Piece::Pawn)
+               }
+               if self.black_knights & target != 0 {
+                   return Some(Piece::Knight)
+               }
+               if self.black_bishops & target != 0 {
+                   return Some(Piece::Bishop)
+               }
+               if self.black_rooks & target != 0 {
+                   return Some(Piece::Rook)
+               }
+               if self.black_queens & target != 0 {
+                   return Some(Piece::Queen)
+               }
+               if self.black_king & target != 0 {
+                   return Some(Piece::King) // shouldn't happen
+               }
+               None
+            }
+        }
     }
 
     pub fn apply_move(&mut self, mov: &Move, color: &Color) -> () {
