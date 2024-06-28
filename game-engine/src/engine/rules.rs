@@ -134,6 +134,84 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
         result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
     }
 
+    if color == &Color::White {
+        let mut single = get_white_pawn_single_pushes(&pawns, &empty);
+        while single != 0 {
+            let to = single.trailing_zeros() as u8;
+            let from = to - 8;
+            let pawn = 1 << to;
+            single = single & !pawn;
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+
+        let mut double = get_white_pawn_double_pushes(&pawns, &empty);
+        while double != 0 {
+            let to = double.trailing_zeros() as u8;
+            let from = to - 16;
+            let pawn = 1 << to;
+            double = double & !pawn;
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+
+        // TODO: enpassant
+        let mut east_captures = get_white_pawn_east_attacks(&pawns, &enemy);
+        while east_captures != 0 {
+            let to = east_captures.trailing_zeros() as u8;
+            let from = to - 9;
+            let pawn = 1 << to;
+            east_captures = east_captures & !pawn;
+            result.push(Move { from, to, promotion: false, capture: true, castling: false }); // TODO
+        }
+
+        let mut west_captures = get_white_pawn_west_attacks(&pawns, &enemy);
+        while west_captures != 0 {
+            let to = west_captures.trailing_zeros() as u8;
+            let from = to - 7;
+            let pawn = 1 << to;
+            west_captures = west_captures & !pawn;
+            result.push(Move { from, to, promotion: false, capture: true, castling: false }); // TODO
+        }
+    } else {
+        let mut single = get_black_pawn_single_pushes(&pawns, &empty);
+        while single != 0 {
+            let to = single.trailing_zeros() as u8;
+            let from = to + 8;
+            let pawn = 1 << to;
+            single = single & !pawn;
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+
+        let mut double = get_black_pawn_double_pushes(&pawns, &empty);
+        while double != 0 {
+            let to = double.trailing_zeros() as u8;
+            let from = to + 16;
+            let pawn = 1 << to;
+            double = double & !pawn;
+            result.push(Move { from, to, promotion: false, capture: false, castling: false }); // TODO
+        }
+
+        // TODO: enpassant
+        let mut east_captures = get_black_pawn_east_attacks(&pawns, &enemy);
+        while east_captures != 0 {
+            let to = east_captures.trailing_zeros() as u8;
+            let from = to + 9;
+            let pawn = 1 << to;
+            east_captures = east_captures & !pawn;
+            result.push(Move { from, to, promotion: false, capture: true, castling: false }); // TODO
+        }
+
+        let mut west_captures = get_black_pawn_west_attacks(&pawns, &enemy);
+        while west_captures != 0 {
+            let to = west_captures.trailing_zeros() as u8;
+            let from = to + 7;
+            let pawn = 1 << to;
+            west_captures = west_captures & !pawn;
+            result.push(Move { from, to, promotion: false, capture: true, castling: false }); // TODO
+        }
+    }
+    // TODO: castling
+
+
     result
 }
 
@@ -210,7 +288,7 @@ pub fn get_rook_moves(rook: &u64, occupied: &u64, friendly: &u64) -> u64 {
     } else {
         result |= north_attack;
     }
-    
+
     let east_attack = ROOK_RAYS[EAST][sq];
     let east_blocker = east_attack & occupied;
     if east_blocker != 0 {
