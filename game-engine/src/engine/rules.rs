@@ -244,14 +244,14 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
 
 pub fn get_knight_moves(knight: &u64, targets: &u64) -> u64 {
     let mut result: u64 = 0;
-    result = result | ((knight << 17) & NOT_A_FILE);
-    result = result | ((knight << 10) & NOT_AB_FILE);
-    result = result | ((knight >> 6) & NOT_AB_FILE);
-    result = result | ((knight >> 15) & NOT_A_FILE);
-    result = result | ((knight << 15) & NOT_H_FILE);
-    result = result | ((knight << 6) & NOT_GH_FILE);
-    result = result | ((knight >> 10) & NOT_GH_FILE);
-    result = result | ((knight >> 17) & NOT_H_FILE);
+    result = result | ((knight << 17) & NOT_H_FILE);
+    result = result | ((knight << 10) & NOT_GH_FILE);
+    result = result | ((knight >> 6) & NOT_GH_FILE);
+    result = result | ((knight >> 15) & NOT_H_FILE);
+    result = result | ((knight << 15) & NOT_A_FILE);
+    result = result | ((knight << 6) & NOT_AB_FILE);
+    result = result | ((knight >> 10) & NOT_AB_FILE);
+    result = result | ((knight >> 17) & NOT_A_FILE);
     result & targets
 }
 

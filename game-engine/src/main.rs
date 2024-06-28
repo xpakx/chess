@@ -67,7 +67,7 @@ pub enum Color {
 }
 
 fn print_bitboard(bitboard: u64) {
-    for rank in (0..8).rev() {
+    for rank in 0..8 {
         for file in 0..8 {
             let square = rank * 8 + file;
             if bitboard & (1 << square) != 0 {
@@ -81,7 +81,7 @@ fn print_bitboard(bitboard: u64) {
 }
 
 fn print_board(bitboard: &BitBoard) {
-    for rank in (0..8).rev() {
+    for rank in 0..8 {
         for file in 0..8 {
             let square = rank * 8 + file;
             if bitboard.black_pawns & (1 << square) != 0 {
