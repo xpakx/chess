@@ -79,15 +79,15 @@ pub struct EngineEvent {
 }
 
 fn process_move(message: MoveEvent) -> EngineEvent {
-    let board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
+    let mut board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
     let mov = string_to_move(&board, message.mov.clone());
-    let legal = verify_move(&board, &message.color, mov);
+    let legal = verify_move(&board, &message.color, &mov);
     let (new_state, finished) = match legal {
         true => {
-            let new_board = board.apply_move(mov, &message.color);
-            let won = is_game_won(&new_board, &message.color);
-            let drawn = !won && is_game_drawn(&new_board, &message.color);
-            (new_board.to_fen(), won || drawn)
+            board.apply_move(&mov, &message.color);
+            let won = is_game_won(&board, &message.color);
+            let drawn = !won && is_game_drawn(&board, &message.color);
+            (board.to_fen(), won || drawn)
         },
         false => (message.game_state, false),
     };

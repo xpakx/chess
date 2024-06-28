@@ -69,11 +69,11 @@ fn generate_ray(square: usize, direction: usize) -> u64 {
 }
 
 pub struct Move {
-    from: u8,
-    to: u8,
-    promotion: bool,
-    capture: bool,
-    castling: bool,
+    pub from: u8,
+    pub to: u8,
+    pub promotion: bool,
+    pub capture: bool,
+    pub castling: bool,
 }
 
 pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
@@ -367,7 +367,7 @@ pub fn get_bishop_moves(bishop: &u64, occupied: &u64, friendly: &u64) -> u64 {
     result ^ (result & friendly)
 }
 
-pub fn verify_move(board: &BitBoard, color: &Color, mov: u64) -> bool {
+pub fn verify_move(board: &BitBoard, color: &Color, mov: &Move) -> bool {
     true
 }
 
@@ -379,10 +379,12 @@ pub fn is_game_drawn(board: &BitBoard, color: &Color) -> bool {
     false
 }
 
-pub fn move_to_string(board: &BitBoard, mov: u64) -> String {
+pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
     "e4".into()
 }
 
-pub fn string_to_move(board: &BitBoard, mov: String) -> u64 {
-    0
+pub fn string_to_move(board: &BitBoard, mov: String) -> Move {
+    Move {
+        from: 0, to: 0, promotion: false, capture: false, castling: false,
+    }
 }

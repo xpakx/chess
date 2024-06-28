@@ -71,19 +71,19 @@ struct AIEvent {
 }
 
 fn process_ai_event(message: AIEvent) -> EngineEvent {
-    let board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
+    let mut board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
     let mut engine = get_engine(EngineType::Random);
     let mov = engine.get_move(&board, &message.color);
-    let new_board = board.apply_move(mov, &message.color);
-    let mov_string = move_to_string(&board, mov);
+    board.apply_move(&mov, &message.color);
+    let mov_string = move_to_string(&board, &mov);
 
-    let won = is_game_won(&new_board, &message.color);
-    let drawn = !won && is_game_drawn(&new_board, &message.color);
+    let won = is_game_won(&board, &message.color);
+    let drawn = !won && is_game_drawn(&board, &message.color);
     let finished = won || drawn;
 
     EngineEvent {
         game_id: message.game_id,
-        new_state: new_board.to_fen(),
+        new_state: board.to_fen(),
         mov: mov_string,
         legal: true,
         finished,

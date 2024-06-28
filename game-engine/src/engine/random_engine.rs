@@ -1,6 +1,6 @@
 use crate::Color;
 
-use super::{BitBoard, Engine};
+use super::{rules::Move, BitBoard, Engine};
 
 pub struct RandomEngine {
 }
@@ -16,7 +16,9 @@ impl Engine for RandomEngine {
         String::from("Random Engine")
     }
 
-    fn get_move(&mut self, _board: &BitBoard, _color: &Color) -> u64 {
-        0
+    fn get_move(&mut self, _board: &BitBoard, _color: &Color) -> Move {
+        Move {
+            from: 0, to: 0, promotion: false, capture: false, castling: false,
+        }
     }
 }
