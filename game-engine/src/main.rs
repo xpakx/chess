@@ -4,7 +4,7 @@ mod engine;
 
 use crate::rabbit::lapin_listen;
 use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves, get_bishop_moves, get_possible_moves};
-use crate::engine::BitBoard;
+use crate::engine::{BitBoard, generate_bit_board};
 use serde::{Deserialize, Serialize};
 
 #[tokio::main]
@@ -37,27 +37,19 @@ async fn main() {
     println!("Bishop moves:");
     print_bitboard(moves);
 
-    let board = BitBoard {
-        black_pawns:   0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000,
-        black_king:    0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
-        black_queens:  0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
-        black_bishops: 0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
-        black_knights: 0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
-        black_rooks:   0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
-
-        white_pawns:   0b00000000_00000000_00000000_00000000_00000000_00000000_11111111_00000000,
-        white_king:    0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000,
-        white_queens:  0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00010000,
-        white_bishops: 0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00100100,
-        white_knights: 0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_01000010,
-        white_rooks:   0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_10000001,
-    };
+    let mut board = generate_bit_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".into()).unwrap();
 
     println!("Board:");
     print_board(&board);
 
     let moves = get_possible_moves(&board, &Color::White);
     println!("{} moves:", moves.len());
+    for mov in moves {
+        board.apply_move(&mov, &Color::White);
+        print_board(&board);
+        board.apply_move(&mov, &Color::White);
+        println!("---------------");
+    }
     let moves = get_possible_moves(&board, &Color::Red);
     println!("{} moves:", moves.len());
 

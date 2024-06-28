@@ -193,6 +193,43 @@ impl BitBoard {
     }
 
     pub fn apply_move(&mut self, mov: &Move, color: &Color) -> () {
+        if color == &Color::White {
+            match mov.piece {
+                Piece::Pawn => self.white_pawns = self.white_pawns ^ (1<<mov.from | 1<<mov.to),
+                Piece::Knight => self.white_knights = self.white_knights ^ (1<<mov.from | 1<<mov.to),
+                Piece::Bishop => self.white_bishops = self.white_bishops ^ (1<<mov.from | 1<<mov.to),
+                Piece::Rook => self.white_rooks = self.white_rooks ^ (1<<mov.from | 1<<mov.to),
+                Piece::Queen => self.white_queens = self.white_queens ^ (1<<mov.from | 1<<mov.to),
+                Piece::King => self.white_king = self.white_king ^ (1<<mov.from | 1<<mov.to),
+            }
+            match mov.capture { // TODO: enpassant
+                None => {},
+                Some(Piece::Pawn) => self.black_pawns = self.black_pawns ^ 1<<mov.to,
+                Some(Piece::Knight) => self.black_knights = self.black_knights ^ 1<<mov.to,
+                Some(Piece::Bishop) => self.black_bishops = self.black_bishops ^ 1<<mov.to,
+                Some(Piece::Rook) => self.black_rooks = self.black_rooks ^ 1<<mov.to,
+                Some(Piece::Queen) => self.black_queens = self.black_queens ^ 1<<mov.to,
+                Some(Piece::King) => self.black_king = self.black_king ^ 1<<mov.to,
+            }
+        } else {
+            match mov.piece {
+                Piece::Pawn => self.black_pawns = self.black_pawns ^ (1<<mov.from | 1<<mov.to),
+                Piece::Knight => self.black_knights = self.black_knights ^ (1<<mov.from | 1<<mov.to),
+                Piece::Bishop => self.black_bishops = self.black_bishops ^ (1<<mov.from | 1<<mov.to),
+                Piece::Rook => self.black_rooks = self.black_rooks ^ (1<<mov.from | 1<<mov.to),
+                Piece::Queen => self.black_queens = self.black_queens ^ (1<<mov.from | 1<<mov.to),
+                Piece::King => self.black_king = self.black_king ^ (1<<mov.from | 1<<mov.to),
+            }
+            match mov.capture { // TODO: enpassant
+                None => {},
+                Some(Piece::Pawn) => self.white_pawns = self.white_pawns ^ 1<<mov.to,
+                Some(Piece::Knight) => self.white_knights = self.white_knights ^ 1<<mov.to,
+                Some(Piece::Bishop) => self.white_bishops = self.white_bishops ^ 1<<mov.to,
+                Some(Piece::Rook) => self.white_rooks = self.white_rooks ^ 1<<mov.to,
+                Some(Piece::Queen) => self.white_queens = self.white_queens ^ 1<<mov.to,
+                Some(Piece::King) => self.white_king = self.white_king ^ 1<<mov.to,
+            }
+        }
     }
 }
 
