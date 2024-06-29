@@ -411,26 +411,29 @@ pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
     "e4".into()
 }
 
-pub fn string_to_move(board: &BitBoard, mov: String) -> Move {
-    let pattern = r"([KQRBN]?)([a-h]?)([1-8]?)(x)?([a-h][1-8])(=[QRBN])?( e\.p\.)?";
+pub fn string_to_move(board: &BitBoard, mov: String) -> Result<Move, String> {
+    let pattern = r"([KQRBN]?)([a-h])?([1-8])?(x)?([a-h][1-8])(=[QRBN])?( e\.p\.)?";
 
     let re = Regex::new(pattern).unwrap();
 
     match re.captures(mov.as_str()) {
         Some(caps) => {
-            println!("Full match: {}", &caps[0]);
-            println!("Piece: {:?}", caps.get(1).map_or(Piece::Pawn, |m| letter_to_piece(m.as_str())));
-            println!("File from: {}", caps.get(2).map_or("", |m| m.as_str()));
-            println!("Rank from: {}", caps.get(3).map_or("", |m| m.as_str()));
-            println!("Capture: {}", caps.get(4).map_or(false, |_m| true));
-            println!("Destination: {}", &caps[5]);
-            println!("Promotion: {:?}", caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..]))));
-            println!("En passant: {}", caps.get(7).map_or(false, |_m| true));
-        }
-        None => println!("No match found."),
-    }
-    Move {
-        from: 0, to: 0, promotion: false, capture: None, castling: false, piece: Piece::Pawn,
+            let piece = caps.get(1).map_or(Piece::Pawn, |m| letter_to_piece(m.as_str()));
+            let from_file = caps.get(2).map_or(None, |m| Some(m.as_str()));
+            let from_rank = caps.get(3).map_or(None, |m| Some(m.as_str()));
+            let capture = caps.get(4).map_or(false, |_m| true);
+            let destination = &caps[5];
+            let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
+            let enpassant = caps.get(7).map_or(false, |_m| true);
+            println!("({}) {:?}, from: {:?}{:?} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from_file, from_rank, destination, capture, promotion, enpassant);
+            Ok(Move {
+                from: 0, to: 0, promotion: false, capture: None, castling: false, piece,
+            })
+        },
+        None => {
+            println!("No match found.");
+            Err("Cannot parse move".into())
+        },
     }
 }
 
