@@ -1,4 +1,5 @@
 use once_cell::sync::Lazy;
+use regex::Regex;
 
 use crate::Color;
 
@@ -411,7 +412,35 @@ pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
 }
 
 pub fn string_to_move(board: &BitBoard, mov: String) -> Move {
+    let pattern = r"([KQRBN]?)([a-h]?)([1-8]?)(x)?([a-h][1-8])(=[QRBN])?( e\.p\.)?";
+
+    let re = Regex::new(pattern).unwrap();
+
+    match re.captures(mov.as_str()) {
+        Some(caps) => {
+            println!("Full match: {}", &caps[0]);
+            println!("Piece: {:?}", caps.get(1).map_or(Piece::Pawn, |m| letter_to_piece(m.as_str())));
+            println!("File from: {}", caps.get(2).map_or("", |m| m.as_str()));
+            println!("Rank from: {}", caps.get(3).map_or("", |m| m.as_str()));
+            println!("Capture: {}", caps.get(4).map_or(false, |_m| true));
+            println!("Destination: {}", &caps[5]);
+            println!("Promotion: {:?}", caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..]))));
+            println!("En passant: {}", caps.get(7).map_or(false, |_m| true));
+        }
+        None => println!("No match found."),
+    }
     Move {
         from: 0, to: 0, promotion: false, capture: None, castling: false, piece: Piece::Pawn,
+    }
+}
+
+fn letter_to_piece(letter: &str) -> Piece {
+    match letter {
+        "K" => Piece::King,
+        "Q" => Piece::Queen,
+        "R" => Piece::Rook,
+        "B" => Piece::Bishop,
+        "N" => Piece::Knight,
+        _ => Piece::Pawn,
     }
 }

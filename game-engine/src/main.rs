@@ -3,7 +3,7 @@ mod config;
 mod engine;
 
 use crate::rabbit::lapin_listen;
-use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves, get_bishop_moves, get_possible_moves};
+use crate::engine::rules::{ROOK_RAYS, BISHOP_RAYS, get_rook_moves, get_bishop_moves, get_possible_moves, string_to_move};
 use crate::engine::{BitBoard, generate_bit_board};
 use serde::{Deserialize, Serialize};
 
@@ -52,6 +52,25 @@ async fn main() {
     }
     let moves = get_possible_moves(&board, &Color::Red);
     println!("{} moves:", moves.len());
+
+
+
+    let move_str = String::from("Nxe4");
+    string_to_move(&board, move_str);
+    print!("");
+    string_to_move(&board, String::from("e4"));
+    print!("");
+    string_to_move(&board, String::from("Nf3"));
+    print!("");
+    string_to_move(&board, String::from("Bb5+"));
+    print!("");
+    string_to_move(&board, String::from("exd5"));
+    print!("");
+    string_to_move(&board, String::from("Qxe6"));
+    print!("");
+    string_to_move(&board, String::from("a8=Q"));
+    print!("");
+    string_to_move(&board, String::from("g8=N"));
 
     let config = config::get_config();
     let mut cfg = deadpool_lapin::Config::default();
