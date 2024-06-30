@@ -28,12 +28,12 @@ async fn main() {
 
 
 
-    let mov = string_to_move(&board, String::from("e4"), &Color::White).unwrap();
+    let mov = string_to_move(&mut board, String::from("e4"), &Color::White).unwrap();
     board.apply_move(&mov, &Color::White);
     print_board(&board);
     board.apply_move(&mov, &Color::White);
 
-    let mov = string_to_move(&board, String::from("e3"), &Color::White).unwrap();
+    let mov = string_to_move(&mut board, String::from("e3"), &Color::White).unwrap();
     board.apply_move(&mov, &Color::White);
     print_board(&board);
     board.apply_move(&mov, &Color::White);

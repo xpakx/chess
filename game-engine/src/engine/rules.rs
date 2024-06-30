@@ -411,7 +411,7 @@ pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
     "e4".into()
 }
 
-pub fn string_to_move(board: &BitBoard, mov: String, color: &Color) -> Result<Move, String> {
+pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Result<Move, String> {
     let pattern = r"([KQRBN]?)([a-h])?([1-8])?(x)?([a-h][1-8])(=[QRBN])?( e\.p\.)?";
 
     let re = Regex::new(pattern).unwrap();
@@ -446,7 +446,7 @@ pub fn string_to_move(board: &BitBoard, mov: String, color: &Color) -> Result<Mo
                 },
             };
 
-            // TODO: filter out illegal ones
+            // TODO: filter out illegal ones -> apply move, get capture map, check if king is under check, unmake move
             if candidates.count_ones() > 1 {
                 return Err("Ambiguous starting position!".into())
             }
@@ -562,4 +562,49 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
             get_king_moves(&(1<<to), &king)
         },
     }
+}
+
+pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
+    let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
+        Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
+                       board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
+        Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
+                       board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
+    };
+    let friendly = pawns | knights | bishops | rooks | queens | king;
+    let all_pieces = friendly | enemy;
+    let empty = !all_pieces;
+
+    let mut result = 0;
+
+    result |= get_knight_moves(&knights, &(empty | enemy));
+    result |= get_king_moves(&king, &(empty | enemy));
+
+    if color == &Color::White {
+        // TODO: enpassant
+        result |= get_white_pawn_east_attacks(&pawns, &enemy);
+        result |= get_white_pawn_west_attacks(&pawns, &enemy);
+    } else {
+        // TODO: enpassant
+        result |= get_black_pawn_east_attacks(&pawns, &enemy);
+        result |= get_black_pawn_west_attacks(&pawns, &enemy);
+    }
+
+    let mut current = rooks | queens;
+    while current != 0 {
+        let from = current.trailing_zeros() as u8;
+        let rook = 1 << from;
+        current = current & !rook;
+        result |= get_rook_moves(&rook, &all_pieces, &friendly);
+    }
+
+    current = bishops | queens;
+    while current != 0 {
+        let from = current.trailing_zeros() as u8;
+        let bishop = 1 << from;
+        current = current & !bishop;
+        result |= get_bishop_moves(&bishop, &all_pieces, &friendly);
+    }
+
+    result
 }
