@@ -27,20 +27,16 @@ async fn main() {
 
 
 
-    let move_str = String::from("Nxe4");
-    string_to_move(&board, move_str).unwrap();
 
-    let mov = string_to_move(&board, String::from("e4")).unwrap();
+    let mov = string_to_move(&board, String::from("e4"), &Color::White).unwrap();
     board.apply_move(&mov, &Color::White);
     print_board(&board);
     board.apply_move(&mov, &Color::White);
 
-    string_to_move(&board, String::from("Nf3")).unwrap();
-    string_to_move(&board, String::from("Bb5+")).unwrap();
-    string_to_move(&board, String::from("exd5")).unwrap();
-    string_to_move(&board, String::from("Qxe6")).unwrap();
-    string_to_move(&board, String::from("a8=Q")).unwrap();
-    string_to_move(&board, String::from("g8=N")).unwrap();
+    let mov = string_to_move(&board, String::from("e3"), &Color::White).unwrap();
+    board.apply_move(&mov, &Color::White);
+    print_board(&board);
+    board.apply_move(&mov, &Color::White);
 
     let config = config::get_config();
     let mut cfg = deadpool_lapin::Config::default();

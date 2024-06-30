@@ -1,7 +1,7 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-use crate::Color;
+use crate::{print_bitboard, Color};
 
 use super::BitBoard;
 
@@ -411,7 +411,7 @@ pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
     "e4".into()
 }
 
-pub fn string_to_move(board: &BitBoard, mov: String) -> Result<Move, String> {
+pub fn string_to_move(board: &BitBoard, mov: String, color: &Color) -> Result<Move, String> {
     let pattern = r"([KQRBN]?)([a-h])?([1-8])?(x)?([a-h][1-8])(=[QRBN])?( e\.p\.)?";
 
     let re = Regex::new(pattern).unwrap();
@@ -425,9 +425,51 @@ pub fn string_to_move(board: &BitBoard, mov: String) -> Result<Move, String> {
             let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
-            println!("({}) {:?}, from {:?}{:?} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from_file, from_rank, to, capture, promotion, enpassant);
+            let from = match (from_file, from_rank) {
+                (Some(file), Some(rank)) => field_to_num(format!("{}{}", file, rank).as_str()),
+                (Some(file), None) => {
+                    let file = file_to_num(file.chars().next().unwrap());
+                    let move_map = get_moves_from(board, &piece, capture, to, color);
+                    let file_map = ROOK_RAYS[0+file as usize][NORTH] | (1 << (0+file));
+                    let candidates = move_map & file_map;
+                    // TODO: filter out illegal ones
+                    if candidates.count_ones() > 1 {
+                        return Err("Ambiguous starting position!".into())
+                    }
+                    if candidates == 0 {
+                        return Err("No such piece!".into())
+                    }
+                    candidates.trailing_zeros() as u8
+                },
+                (None, Some(rank)) => {
+                    let rank = file_to_num(rank.chars().next().unwrap());
+                    let move_map = get_moves_from(board, &piece, capture, to, color);
+                    let rank_map = ROOK_RAYS[(rank as usize)*8 + 0][WEST] | (1 << (0+rank*8));
+                    let candidates = move_map & rank_map;
+                    // TODO: filter out illegal ones
+                    if candidates.count_ones() > 1 {
+                        return Err("Ambiguous starting position!".into())
+                    }
+                    if candidates == 0 {
+                        return Err("No such piece!".into())
+                    }
+                    candidates.trailing_zeros() as u8
+                },
+                (None, None) => {
+                    let move_map = get_moves_from(board, &piece, capture, to, color);
+                    // TODO: filter out illegal ones
+                    if move_map.count_ones() > 1 {
+                        return Err("Ambiguous starting position!".into())
+                    }
+                    if move_map == 0 {
+                        return Err("No such piece!".into())
+                    }
+                    move_map.trailing_zeros() as u8
+                },
+            };
+            println!("({}) {:?}, from {} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
             Ok(Move {
-                from: 0, to, promotion: false, capture: None, castling: false, piece,
+                from, to, promotion: false, capture: None, castling: false, piece,
             })
         },
         None => {
@@ -448,11 +490,88 @@ fn letter_to_piece(letter: &str) -> Piece {
     }
 }
 
+fn rank_to_num(rank: char) -> u8 {
+    rank as u8 - b'1'
+}
+
+fn file_to_num(file: char) -> u8 {
+    7 - (file as u8 - b'a')
+}
+
 fn field_to_num(field: &str) -> u8 {
     let mut c = field.chars();
     let file = c.next().unwrap();
     let rank = c.next().unwrap();
-    let file = 7 - (file as u8 - b'a');
-    let rank = rank as u8 - b'1';
+    let file = file_to_num(file);
+    let rank = rank_to_num(rank);
     rank*8 + file
+}
+
+fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color: &Color) -> u64 {
+    let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
+        Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
+                       board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
+        Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
+                       board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
+    };
+    let my = pawns | knights | bishops | rooks | queens | king;
+    match (piece, capture) {
+        (Piece::Pawn, true) => {
+            match color {
+                Color::White => {
+                    let empty = !(my|enemy);
+                    let west = get_white_pawn_west_attacks(&pawns, &empty);
+                    let west = (west & (1<<to)) >> 7;
+                    let east = get_white_pawn_east_attacks(&pawns, &empty);
+                    let east = (east & (1<<to)) >> 9;
+                    east | west
+                },
+                Color::Red => {
+                    let empty = !(my|enemy);
+                    let west = get_black_pawn_west_attacks(&pawns, &empty);
+                    let west = (west & (1<<to)) << 9;
+                    let east = get_black_pawn_east_attacks(&pawns, &empty);
+                    let east = (east & (1<<to)) << 7;
+                    east | west
+                },
+            }
+        },
+        (Piece::Pawn, false) => {
+            match color {
+                Color::White => {
+                    let empty = !(my|enemy);
+                    let single = get_white_pawn_single_pushes(&pawns, &empty);
+                    let single = (single & (1<<to)) >> 8;
+                    let double = get_white_pawn_double_pushes(&pawns, &empty);
+                    let double = (double & (1<<to)) >> 16;
+                    single | double
+                },
+                Color::Red => {
+                    let empty = !(my|enemy);
+                    let single = get_black_pawn_single_pushes(&pawns, &empty);
+                    let single = (single & (1<<to)) << 8;
+                    let double = get_black_pawn_double_pushes(&pawns, &empty);
+                    let double = (double & (1<<to)) << 16;
+                    single | double
+                },
+            }
+        }, 
+        (Piece::Knight, _) => {
+            get_knight_moves(&(1<<to), &knights)
+        },
+        (Piece::Bishop, _) => {
+            get_bishop_moves(&(1<<to), &(enemy|my), &enemy)
+        },
+        (Piece::Rook, _) => {
+            get_rook_moves(&(1<<to), &(enemy|my), &enemy)
+        },
+        (Piece::Queen, _) => {
+            let bishop = get_bishop_moves(&(1<<to), &(enemy|my), &enemy);
+            let rook = get_rook_moves(&(1<<to), &(enemy|my), &enemy);
+            bishop | rook
+        },
+        (Piece::King, _) => {
+            get_king_moves(&(1<<to), &king)
+        },
+    }
 }
