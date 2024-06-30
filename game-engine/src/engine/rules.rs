@@ -425,48 +425,36 @@ pub fn string_to_move(board: &BitBoard, mov: String, color: &Color) -> Result<Mo
             let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
-            let from = match (from_file, from_rank) {
-                (Some(file), Some(rank)) => field_to_num(format!("{}{}", file, rank).as_str()),
+            let candidates = match (from_file, from_rank) {
+                (Some(file), Some(rank)) => {
+                    1 << field_to_num(format!("{}{}", file, rank).as_str())
+                },
                 (Some(file), None) => {
                     let file = file_to_num(file.chars().next().unwrap());
                     let move_map = get_moves_from(board, &piece, capture, to, color);
                     let file_map = ROOK_RAYS[0+file as usize][NORTH] | (1 << (0+file));
-                    let candidates = move_map & file_map;
-                    // TODO: filter out illegal ones
-                    if candidates.count_ones() > 1 {
-                        return Err("Ambiguous starting position!".into())
-                    }
-                    if candidates == 0 {
-                        return Err("No such piece!".into())
-                    }
-                    candidates.trailing_zeros() as u8
+                    move_map & file_map
                 },
                 (None, Some(rank)) => {
                     let rank = file_to_num(rank.chars().next().unwrap());
                     let move_map = get_moves_from(board, &piece, capture, to, color);
                     let rank_map = ROOK_RAYS[(rank as usize)*8 + 0][WEST] | (1 << (0+rank*8));
-                    let candidates = move_map & rank_map;
-                    // TODO: filter out illegal ones
-                    if candidates.count_ones() > 1 {
-                        return Err("Ambiguous starting position!".into())
-                    }
-                    if candidates == 0 {
-                        return Err("No such piece!".into())
-                    }
-                    candidates.trailing_zeros() as u8
+                    move_map & rank_map
                 },
                 (None, None) => {
-                    let move_map = get_moves_from(board, &piece, capture, to, color);
-                    // TODO: filter out illegal ones
-                    if move_map.count_ones() > 1 {
-                        return Err("Ambiguous starting position!".into())
-                    }
-                    if move_map == 0 {
-                        return Err("No such piece!".into())
-                    }
-                    move_map.trailing_zeros() as u8
+                    get_moves_from(board, &piece, capture, to, color)
                 },
             };
+
+            // TODO: filter out illegal ones
+            if candidates.count_ones() > 1 {
+                return Err("Ambiguous starting position!".into())
+            }
+            if candidates == 0 {
+                return Err("No such piece!".into())
+            }
+            let from = candidates.trailing_zeros() as u8;
+
             println!("({}) {:?}, from {} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
             Ok(Move {
                 from, to, promotion: false, capture: None, castling: false, piece,
