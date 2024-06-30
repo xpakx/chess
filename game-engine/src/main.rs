@@ -29,7 +29,12 @@ async fn main() {
 
     let move_str = String::from("Nxe4");
     string_to_move(&board, move_str).unwrap();
-    string_to_move(&board, String::from("e4")).unwrap();
+
+    let mov = string_to_move(&board, String::from("e4")).unwrap();
+    board.apply_move(&mov, &Color::White);
+    print_board(&board);
+    board.apply_move(&mov, &Color::White);
+
     string_to_move(&board, String::from("Nf3")).unwrap();
     string_to_move(&board, String::from("Bb5+")).unwrap();
     string_to_move(&board, String::from("exd5")).unwrap();
@@ -65,8 +70,8 @@ fn print_bitboard(bitboard: u64) {
 }
 
 fn print_board(bitboard: &BitBoard) {
-    for rank in 0..8 {
-        for file in 0..8 {
+    for rank in (0..8).rev() {
+        for file in (0..8).rev() {
             let square = rank * 8 + file;
             if bitboard.black_pawns & (1 << square) != 0 {
                 print!("♟ ");

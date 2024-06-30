@@ -422,12 +422,12 @@ pub fn string_to_move(board: &BitBoard, mov: String) -> Result<Move, String> {
             let from_file = caps.get(2).map_or(None, |m| Some(m.as_str()));
             let from_rank = caps.get(3).map_or(None, |m| Some(m.as_str()));
             let capture = caps.get(4).map_or(false, |_m| true);
-            let destination = &caps[5];
+            let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
-            println!("({}) {:?}, from: {:?}{:?} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from_file, from_rank, destination, capture, promotion, enpassant);
+            println!("({}) {:?}, from {:?}{:?} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from_file, from_rank, to, capture, promotion, enpassant);
             Ok(Move {
-                from: 0, to: 0, promotion: false, capture: None, castling: false, piece,
+                from: 0, to, promotion: false, capture: None, castling: false, piece,
             })
         },
         None => {
@@ -446,4 +446,13 @@ fn letter_to_piece(letter: &str) -> Piece {
         "N" => Piece::Knight,
         _ => Piece::Pawn,
     }
+}
+
+fn field_to_num(field: &str) -> u8 {
+    let mut c = field.chars();
+    let file = c.next().unwrap();
+    let rank = c.next().unwrap();
+    let file = 7 - (file as u8 - b'a');
+    let rank = rank as u8 - b'1';
+    rank*8 + file
 }
