@@ -1,5 +1,5 @@
 use once_cell::sync::Lazy;
-use regex::Regex;
+use regex::{Captures, Regex};
 
 use crate::{print_bitboard, Color};
 
@@ -425,6 +425,8 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
+            // TODO: make sure there is a correct piece at from position
+
             let mut candidates = match (from_file, from_rank) {
                 (Some(file), Some(rank)) => {
                     1 << field_to_num(format!("{}{}", file, rank).as_str())
@@ -447,13 +449,19 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             };
 
             let mut current = candidates;
+            let capture = board.get_capture(&(1<<to), color); // TODO: make sure capture was set correctly
+            let opp_color = match color {
+                Color::White => Color::Red,
+                Color::Red => Color::White,
+            };
+                                                              
             while current != 0 {
                 let from = current.trailing_zeros() as u8;
                 let piece_from = 1 << from as u8;
                 current = current & !piece_from;
-                let mov = Move { from, to, promotion: false, capture: None, castling: false, piece }; // TODO
+                let mov = Move { from, to, promotion: false, capture, castling: false, piece }; // TODO
                 board.apply_move(&mov, color);
-                let captures = get_capture_map(&board, color);
+                let captures = get_capture_map(&board, &opp_color);
                 let king = match color {
                     Color::White => board.white_king,
                     Color::Red => board.black_king,
@@ -472,9 +480,9 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             }
             let from = candidates.trailing_zeros() as u8;
 
-            println!("({}) {:?}, from {} to {}, capture: {}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
+            println!("({}) {:?}, from {} to {}, capture: {:?}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
             Ok(Move {
-                from, to, promotion: false, capture: None, castling: false, piece,
+                from, to, promotion: false, capture, castling: false, piece,
             })
         },
         None => {

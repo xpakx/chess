@@ -232,6 +232,33 @@ impl BitBoard {
             }
         }
     }
+
+    pub fn get_capture(&self, to: &u64, color: &Color) -> Option<Piece> {
+        let (pawns, knights, bishops, rooks, queens, king) = match color {
+            Color::White => (self.black_pawns, self.black_knights, self.black_bishops, self.black_rooks, self.black_queens, self.black_king),
+            Color::Red => (self.white_pawns, self.white_knights, self.white_bishops, self.white_rooks, self.white_queens, self.white_king),
+        };
+        if pawns & to != 0 {
+            return Some(Piece::Pawn)
+        }
+        if knights & to != 0 {
+            return Some(Piece::Knight)
+        }
+        if bishops & to != 0 {
+            return Some(Piece::Bishop)
+        }
+        if rooks & to != 0 {
+            return Some(Piece::Rook)
+        }
+        if queens & to != 0 {
+            return Some(Piece::Queen)
+        }
+        if king & to != 0 {
+            return Some(Piece::King) // should't happen?
+        }
+
+        None
+    }
 }
 
 pub trait Engine {
