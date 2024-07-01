@@ -22,7 +22,7 @@ async fn main() {
         board.apply_move(&mov, &Color::White);
         println!("---------------");
     }
-    let moves = get_possible_moves(&board, &Color::Red);
+    let moves = get_possible_moves(&board, &Color::Black);
     println!("{} moves:", moves.len());
 
 
@@ -48,7 +48,7 @@ async fn main() {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Color {
     White,
-    Red,
+    Black,
 }
 
 fn print_bitboard(bitboard: u64) {

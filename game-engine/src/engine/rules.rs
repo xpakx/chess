@@ -86,7 +86,7 @@ pub struct Move {
 
 pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
-        Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
+        Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
                        board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
                        board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
@@ -454,8 +454,8 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             };
 
             let opp_color = match color {
-                Color::White => Color::Red,
-                Color::Red => Color::White,
+                Color::White => Color::Black,
+                Color::Black => Color::White,
             };
 
             let capture = board.get_capture(&(1<<to), &opp_color);
@@ -472,7 +472,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 let captures = get_capture_map(&board, &opp_color);
                 let king = match color {
                     Color::White => board.white_king,
-                    Color::Red => board.black_king,
+                    Color::Black => board.black_king,
                 };
                 board.apply_move(&mov, color);
                 if king & captures != 0 {
@@ -530,7 +530,7 @@ fn field_to_num(field: &str) -> u8 {
 
 fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color: &Color) -> u64 {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
-        Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
+        Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
                        board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
                        board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
@@ -547,7 +547,7 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
                     let east = (east & (1<<to)) >> 9;
                     east | west
                 },
-                Color::Red => {
+                Color::Black => {
                     let empty = !(my|enemy);
                     let west = get_black_pawn_west_attacks(&pawns, &empty);
                     let west = (west & (1<<to)) << 9;
@@ -567,7 +567,7 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
                     let double = (double & (1<<to)) >> 16;
                     single | double
                 },
-                Color::Red => {
+                Color::Black => {
                     let empty = !(my|enemy);
                     let single = get_black_pawn_single_pushes(&pawns, &empty);
                     let single = (single & (1<<to)) << 8;
@@ -599,7 +599,7 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
 
 pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
-        Color::Red => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
+        Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
                        board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
                        board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
