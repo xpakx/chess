@@ -421,11 +421,10 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             let piece = caps.get(1).map_or(Piece::Pawn, |m| letter_to_piece(m.as_str()));
             let from_file = caps.get(2).map_or(None, |m| Some(m.as_str()));
             let from_rank = caps.get(3).map_or(None, |m| Some(m.as_str()));
-            let capture = caps.get(4).map_or(false, |_m| true);
+            let have_capture = caps.get(4).map_or(false, |_m| true);
             let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
-            // TODO: make sure there is a correct piece at from position
 
             let mut candidates = match (from_file, from_rank) {
                 (Some(file), Some(rank)) => {
@@ -433,27 +432,36 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 },
                 (Some(file), None) => {
                     let file = file_to_num(file.chars().next().unwrap());
-                    let move_map = get_moves_from(board, &piece, capture, to, color);
+                    let move_map = get_moves_from(board, &piece, have_capture, to, color);
                     let file_map = ROOK_RAYS[0+file as usize][NORTH] | (1 << (0+file));
                     move_map & file_map
                 },
                 (None, Some(rank)) => {
                     let rank = file_to_num(rank.chars().next().unwrap());
-                    let move_map = get_moves_from(board, &piece, capture, to, color);
+                    let move_map = get_moves_from(board, &piece, have_capture, to, color);
                     let rank_map = ROOK_RAYS[(rank as usize)*8 + 0][WEST] | (1 << (0+rank*8));
                     move_map & rank_map
                 },
                 (None, None) => {
-                    get_moves_from(board, &piece, capture, to, color)
+                    get_moves_from(board, &piece, have_capture, to, color)
                 },
             };
 
             let mut current = candidates;
-            let capture = board.get_capture(&(1<<to), color); // TODO: make sure capture was set correctly
+            let capture = board.get_capture(&(1<<to), color);
+            if (capture.is_none() && have_capture) || (capture.is_some() && !have_capture) {
+                return Err("Capture flag corrupted!".into())
+            };
+
             let opp_color = match color {
                 Color::White => Color::Red,
                 Color::Red => Color::White,
             };
+
+            let capture = board.get_capture(&(1<<to), &opp_color);
+            if capture.is_some() {
+                return Err("Cannot move to field occupied by your own piece!".into())
+            }
                                                               
             while current != 0 {
                 let from = current.trailing_zeros() as u8;
