@@ -403,6 +403,44 @@ pub fn is_game_drawn(_board: &BitBoard, _color: &Color) -> bool {
     false
 }
 
+pub enum GameState {
+    Normal, Check, Checkmate, Stalemate,
+}
+
+pub fn game_state(board: &mut BitBoard, color: &Color) -> GameState {
+    let opp_color = match color {
+        Color::White => Color::Black,
+        Color::Black => Color::White,
+    };
+
+    let captures = get_capture_map(&board, color);
+    let king = match opp_color {
+        Color::White => board.white_king,
+        Color::Black => board.black_king,
+    };
+    let check = king & captures != 0;
+
+    let moves = get_possible_moves(board, &opp_color);
+    let mut no_moves = true;
+    for mov in moves {
+        board.apply_move(&mov, &opp_color);
+        let captures = get_capture_map(board, color);
+        let no_check = king & captures == 0;
+        board.apply_move(&mov, &opp_color);
+        if no_check {
+            no_moves = false;
+            break;
+        }
+    }
+
+    match (check, no_moves) {
+        (true, true) => GameState::Checkmate,
+        (true, false) => GameState::Check,
+        (false, true) => GameState::Stalemate,
+        (false, false) => GameState::Normal,
+    }
+}
+
 pub fn move_to_string(board: &mut BitBoard, mov: &Move, color: &Color, check: bool, checkmate:bool) -> String {
     // TODO: castling
     let have_capture = mov.capture.is_some();
