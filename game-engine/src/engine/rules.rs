@@ -408,16 +408,10 @@ pub enum GameState {
 }
 
 pub fn game_state(board: &mut BitBoard, color: &Color) -> GameState {
-    let opp_color = match color {
-        Color::White => Color::Black,
-        Color::Black => Color::White,
-    };
+    let opp_color = color.opposite(); 
 
     let captures = get_capture_map(&board, color);
-    let king = match opp_color {
-        Color::White => board.white_king,
-        Color::Black => board.black_king,
-    };
+    let king = board.get_bitboard_by_piece(&Piece::King, &opp_color);
     let check = king & captures != 0;
 
     let moves = get_possible_moves(board, &opp_color);
@@ -447,10 +441,7 @@ pub fn move_to_string(board: &mut BitBoard, mov: &Move, color: &Color, check: bo
 
     let mut candidates = get_moves_from(board, &mov.piece, have_capture, mov.to, color);
 
-    let opp_color = match color {
-        Color::White => Color::Black,
-        Color::Black => Color::White,
-    };
+    let opp_color = color.opposite();
 
     let mut cand = Vec::new();
     while candidates != 0 {
@@ -460,10 +451,7 @@ pub fn move_to_string(board: &mut BitBoard, mov: &Move, color: &Color, check: bo
         let mov = Move { from, to: mov.to, promotion: mov.promotion, capture: mov.capture, castling: false, piece: mov.piece }; // TODO
         board.apply_move(&mov, color);
         let captures = get_capture_map(&board, &opp_color);
-        let king = match color {
-            Color::White => board.white_king,
-            Color::Black => board.black_king,
-        };
+        let king = board.get_king_by_color(color);
         board.apply_move(&mov, color);
         if from == mov.from {
             continue;
@@ -569,10 +557,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 return Err("Capture flag corrupted!".into())
             };
 
-            let opp_color = match color {
-                Color::White => Color::Black,
-                Color::Black => Color::White,
-            };
+            let opp_color = color.opposite();
 
             let capture = board.get_capture(&(1<<to), &opp_color);
             if capture.is_some() {
@@ -586,10 +571,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 let mov = Move { from, to, promotion: false, capture, castling: false, piece }; // TODO
                 board.apply_move(&mov, color);
                 let captures = get_capture_map(&board, &opp_color);
-                let king = match color {
-                    Color::White => board.white_king,
-                    Color::Black => board.black_king,
-                };
+                let king = board.get_king_by_color(color);
                 board.apply_move(&mov, color);
                 if king & captures != 0 {
                     candidates ^= piece_from;

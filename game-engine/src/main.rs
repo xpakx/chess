@@ -51,6 +51,15 @@ pub enum Color {
     Black,
 }
 
+impl Color {
+    fn opposite(&self) -> Color {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        }
+    }
+}
+
 #[allow(dead_code)]
 fn print_bitboard(bitboard: u64) {
     for rank in 0..8 {

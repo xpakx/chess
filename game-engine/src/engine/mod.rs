@@ -259,6 +259,35 @@ impl BitBoard {
 
         None
     }
+
+    pub fn get_bitboard_by_piece(&self, piece: &Piece, color: &Color) -> u64 {
+        match color {
+            Color::Black => match piece {
+                    Piece::Pawn => self.black_pawns,
+                    Piece::Knight => self.black_knights,
+                    Piece::Bishop => self.black_bishops,
+                    Piece::Rook => self.black_rooks,
+                    Piece::Queen => self.black_queens,
+                    Piece::King => self.black_king,
+                }
+            ,
+            Color::White => match piece {
+                Piece::Pawn => self.white_pawns,
+                Piece::Knight => self.white_knights,
+                Piece::Bishop => self.white_bishops,
+                Piece::Rook => self.white_rooks,
+                Piece::Queen => self.white_queens,
+                Piece::King => self.white_king,
+            }
+        }
+    }
+
+    pub fn get_king_by_color(&self, color: &Color) -> u64 {
+        match color {
+            Color::Black => self.black_king,
+            Color::White => self.white_king,
+        }
+    }
 }
 
 pub trait Engine {
