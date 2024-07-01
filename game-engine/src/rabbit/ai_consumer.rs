@@ -75,7 +75,7 @@ fn process_ai_event(message: AIEvent) -> EngineEvent {
     let mut engine = get_engine(EngineType::Random);
     let mov = engine.get_move(&board, &message.color);
     board.apply_move(&mov, &message.color);
-    let mov_string = move_to_string(&board, &mov);
+    let mov_string = move_to_string(&mut board, &mov, &message.color, false, false);
 
     let won = is_game_won(&board, &message.color);
     let drawn = !won && is_game_drawn(&board, &message.color);

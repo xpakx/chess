@@ -51,6 +51,7 @@ pub enum Color {
     Black,
 }
 
+#[allow(dead_code)]
 fn print_bitboard(bitboard: u64) {
     for rank in 0..8 {
         for file in 0..8 {
@@ -65,6 +66,7 @@ fn print_bitboard(bitboard: u64) {
     }
 }
 
+#[allow(dead_code)]
 fn print_board(bitboard: &BitBoard) {
     for rank in (0..8).rev() {
         for file in (0..8).rev() {

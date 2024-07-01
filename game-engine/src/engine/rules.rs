@@ -1,7 +1,7 @@
 use once_cell::sync::Lazy;
-use regex::{Captures, Regex};
+use regex::Regex;
 
-use crate::{print_bitboard, Color};
+use crate::Color;
 
 use super::BitBoard;
 
@@ -70,7 +70,7 @@ fn generate_ray(square: usize, direction: usize) -> u64 {
 }
 
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Piece {
     Pawn, Knight, Rook, Bishop, Queen, King,
 }
@@ -395,20 +395,98 @@ pub fn get_bishop_moves(bishop: &u64, occupied: &u64, friendly: &u64) -> u64 {
     result ^ (result & friendly)
 }
 
-pub fn verify_move(board: &BitBoard, color: &Color, mov: &Move) -> bool {
-    true
-}
-
-pub fn is_game_won(board: &BitBoard, color: &Color) -> bool {
+pub fn is_game_won(_board: &BitBoard, _color: &Color) -> bool {
     false
 }
 
-pub fn is_game_drawn(board: &BitBoard, color: &Color) -> bool {
+pub fn is_game_drawn(_board: &BitBoard, _color: &Color) -> bool {
     false
 }
 
-pub fn move_to_string(board: &BitBoard, mov: &Move) -> String {
-    "e4".into()
+pub fn move_to_string(board: &mut BitBoard, mov: &Move, color: &Color, check: bool, checkmate:bool) -> String {
+    // TODO: castling
+    let have_capture = mov.capture.is_some();
+
+    let mut candidates = get_moves_from(board, &mov.piece, have_capture, mov.to, color);
+
+    let opp_color = match color {
+        Color::White => Color::Black,
+        Color::Black => Color::White,
+    };
+
+    let mut cand = Vec::new();
+    while candidates != 0 {
+        let from = candidates.trailing_zeros() as u8;
+        let piece_from = 1 << from as u8;
+        candidates = candidates & !piece_from;
+        let mov = Move { from, to: mov.to, promotion: mov.promotion, capture: mov.capture, castling: false, piece: mov.piece }; // TODO
+        board.apply_move(&mov, color);
+        let captures = get_capture_map(&board, &opp_color);
+        let king = match color {
+            Color::White => board.white_king,
+            Color::Black => board.black_king,
+        };
+        board.apply_move(&mov, color);
+        if from == mov.from {
+            continue;
+        }
+        if king & captures == 0 {
+            cand.push(from)
+        };
+    }
+    let need_file = cand.iter().find(|&&m| m % 8 == mov.from % 8).is_some();
+    let need_rank = cand.iter().find(|&&m| m / 8 == mov.from / 8).is_some();
+
+    let mut move_str = String::new();
+
+    if mov.piece != Piece::Pawn {
+        move_str.push(piece_to_letter(mov.piece));
+    }
+
+    if need_file {
+        move_str.push(num_to_file(mov.from));
+    }
+    if need_rank {
+        move_str.push(num_to_rank(mov.from));
+    }
+
+    if have_capture {
+        move_str.push('x');
+    }
+
+    move_str.push(num_to_file(mov.to));
+    move_str.push(num_to_rank(mov.to));
+
+    // TODO: add promotion (=[QRBN])
+   
+    if check & !checkmate {
+        move_str.push('+');
+    }
+    if checkmate {
+        move_str.push('#');
+    }
+    // TODO: add enpassant ( e.p.)
+
+    move_str
+}
+
+fn piece_to_letter(piece: Piece) -> char {
+    match piece {
+        Piece::Pawn => 'P',
+        Piece::Knight => 'N',
+        Piece::Bishop => 'B',
+        Piece::Rook => 'R',
+        Piece::Queen => 'Q',
+        Piece::King => 'K',
+    }
+}
+
+fn num_to_rank(pos: u8) -> char {
+    (b'1' + (pos / 8)) as char
+}
+
+fn num_to_file(pos: u8) -> char {
+    (b'a' + 7 - (pos % 8)) as char
 }
 
 pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Result<Move, String> {
@@ -462,7 +540,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             if capture.is_some() {
                 return Err("Cannot move to field occupied by your own piece!".into())
             }
-                                                              
+
             while current != 0 {
                 let from = current.trailing_zeros() as u8;
                 let piece_from = 1 << from as u8;
