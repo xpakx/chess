@@ -192,6 +192,7 @@ impl BitBoard {
         }
     }
 
+    // TODO: captures, castling, enpassant
     pub fn apply_move(&mut self, mov: &Move, color: &Color) -> () {
         if color == &Color::White {
             match mov.piece {
