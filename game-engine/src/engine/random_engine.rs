@@ -1,13 +1,18 @@
+use rand::{rngs::ThreadRng, thread_rng, Rng};
+
 use crate::Color;
 
 use super::{rules::{get_capture_map, get_possible_moves, Move}, BitBoard, Engine};
 
 pub struct RandomEngine {
+    rng: ThreadRng,
 }
 
 impl RandomEngine {
     pub fn new() -> RandomEngine {
-        RandomEngine {}
+        RandomEngine {
+            rng: thread_rng(),
+        }
     }
 }
 
@@ -30,6 +35,7 @@ impl Engine for RandomEngine {
             no_check
         }).collect();
 
-        moves.pop().unwrap()
+        let index = self.rng.gen_range(0..moves.len());
+        moves.swap_remove(index)
     }
 }
