@@ -16,7 +16,7 @@ import { Castling } from '../dto/castling';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit, OnDestroy {
-  board: Field[][] = 
+  board: Field[][] =
   [
     ["BlackRook", "BlackKnight", "BlackBishop", "BlackQueen", "BlackKing", "BlackBishop", "BlackKnight", "BlackRook"],
     ["BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn", "BlackPawn"],
@@ -95,12 +95,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent, i: number, j: number) {
     this.classList[i][j] = "";
     event.preventDefault();
-    if (!this.dragged || !this.color) {
+    if (!this.dragged || !this.color || !this._gameId) {
       return;
     }
     const start = [this.dragged[0], this.dragged[1]];
     const end = [i, j];
-    const capture = this.board[i][j] != "Empty"; // TODO: en passant, castling
+    const capture = this.board[i][j] != "Empty"; // TODO: en passant
     const piece = this.board[start[0]][start[1]].replace(this.color, "") as Piece;
 
     if (piece == "King") {
@@ -108,9 +108,11 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (start[0] == rank && start[1] == 4 && end[0] == rank) {
         if (end[1] == 2) {
           this.toast.createToast({ id: `drop${i}${j}`, type: "info", message: `move O-O-O` });
+          this.websocket.makeMove(this._gameId!, {move: "O-O-O"});
           return;
         } else if (end[1] == 6) {
           this.toast.createToast({ id: `drop${i}${j}`, type: "info", message: `move O-O` });
+          this.websocket.makeMove(this._gameId!, {move: "O-O"});
           return;
         }
       }
@@ -129,6 +131,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     const moveString = "".concat(pieceLetter, startFile, startRank, captureString, targetFile, targetRank);
     this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`move ${moveString}`});
+    this.websocket.makeMove(this._gameId, {move: moveString});
 
     this.dragged = undefined;
   }
@@ -148,11 +151,9 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   makeMove(message: MoveMessage) {
-    // TODO
-
     if(message.move.startsWith("O")) {
       let move = this.parseCastling(message.move, message.color);
-      if (!move) { 
+      if (!move) {
         return;
       }
 
@@ -180,7 +181,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // TODO: enpassant
     if (move.enpassant && this.lastMove.length == 2) {
       this.board[this.lastMove[0]][this.lastMove[1]] = "Empty";
     }
@@ -216,7 +216,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     const target = [7-this.charToNumber(destination.charCodeAt(1)), this.charToNumber(destination.charCodeAt(0))];
     const startFile = disambiguationFile ? this.charToNumber(disambiguationFile.charCodeAt(0)) : undefined;
     const startRank = disambiguationRank ? 7-this.charToNumber(disambiguationRank.charCodeAt(0)) : undefined;
-    const start = this.findStart(target, color, piece, startFile, startRank, capture ? true : false); //TODO
+    const start = this.findStart(target, color, piece, startFile, startRank, capture ? true : false);
     if (!start) {
       return;
     }
@@ -261,7 +261,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       return charCode - 97;
     } else if (charCode >= 49 && charCode <= 56) {
       return charCode - 49;
-    } 
+    }
     return -1;
   }
 
@@ -321,7 +321,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
       return this.checkPawnMove(start, target, color)
     }
-    
+
     return false;
   }
 
