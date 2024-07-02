@@ -1,7 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::{engine::{generate_bit_board, rules::{game_state, string_to_move, GameState}}, rabbit::DESTINATION_EXCHANGE, Color};
+use crate::{engine::{generate_bit_board, rules::{game_state, string_to_move, GameState, Piece}}, rabbit::DESTINATION_EXCHANGE, Color};
 
 pub fn set_move_delegate(consumer: lapin::Consumer, channel: Channel) {
     consumer.set_delegate({
@@ -79,7 +79,8 @@ pub struct EngineEvent {
 }
 
 fn process_move(message: MoveEvent) -> EngineEvent {
-    let mut board = generate_bit_board(&message.game_state).unwrap().board; // TODO
+    let fen = generate_bit_board(&message.game_state).unwrap();
+    let mut board = fen.board; // TODO
     let mov = string_to_move(&mut board, message.mov.clone(), &message.color);
     let legal = mov.is_ok();
     let (new_state, finished) = match mov {
@@ -94,7 +95,21 @@ fn process_move(message: MoveEvent) -> EngineEvent {
                 GameState::Stalemate => true,
                 _ => false,
             };
-            (board.to_fen(), won || drawn)
+            let board = board.to_fen();
+            let color = message.color.opposite().to_fen();
+            let castling = fen.castling.after_move(&mov, &message.color).to_fen();
+            let enpassant = "-"; // TODO
+            let halfmoves = match (mov.piece, mov.capture) {
+                (Piece::Pawn, _) => 0,
+                (_, Some(_)) => 0,
+                _ => fen.halfmoves + 1,
+            };
+            let moves = match &message.color {
+                Color::White => fen.moves,
+                Color::Black => fen.moves + 1,
+            };
+            let new_state = format!("{board} {color} {castling} {enpassant} {halfmoves} {moves}");
+            (new_state, won || drawn)
         },
         Err(_) => (message.game_state, false),
     };

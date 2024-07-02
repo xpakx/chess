@@ -32,6 +32,79 @@ pub struct FEN {
     pub moves: usize,
 }
 
+impl CastlingAvailability {
+    pub fn after_move(&self, mov: &Move, color: &Color) -> CastlingAvailability {
+        let white_kingside_rook = 0;
+        let white_queenside_rook = 7;
+        let black_kingside_rook = 56;
+        let black_queenside_rook = 63;
+
+        let black_queenside = match self.black_queenside {
+            false => false,
+            true => match (&mov.piece, color) {
+                (Piece::King, Color::Black) => false,
+                (Piece::Rook, Color::Black) => mov.from == black_queenside_rook,
+                (_, Color::White) => mov.capture.is_some() && mov.to == black_queenside_rook,
+                _  => true,
+            },
+        };
+        let black_kingside = match self.black_kingside {
+            false => false,
+            true => match (&mov.piece, color) {
+                (Piece::King, Color::Black) => false,
+                (Piece::Rook, Color::Black) => mov.from == black_kingside_rook,
+                (_, Color::White) => mov.capture.is_some() && mov.to == black_kingside_rook,
+                _  => true,
+            },
+        };
+        let white_queenside = match self.white_queenside {
+            false => false,
+            true => match (&mov.piece, color) {
+                (Piece::King, Color::White) => false,
+                (Piece::Rook, Color::White) => mov.from == white_queenside_rook,
+                (_, Color::Black) => mov.capture.is_some() && mov.to == white_queenside_rook,
+                _  => true,
+            },
+        };
+        let white_kingside = match self.white_kingside {
+            false => false,
+            true => match (&mov.piece, color) {
+                (Piece::King, Color::White) => false,
+                (Piece::Rook, Color::White) => mov.from == white_kingside_rook,
+                (_, Color::Black) => mov.capture.is_some() && mov.to == white_kingside_rook,
+                _  => true,
+            },
+        };
+
+        CastlingAvailability { 
+            black_queenside, 
+            black_kingside, 
+            white_queenside, 
+            white_kingside
+        }
+    }
+
+    pub fn to_fen(&self) -> String {
+        let mut fen = String::new();
+        if self.white_kingside {
+            fen.push('K');
+        }
+        if self.white_queenside {
+            fen.push('Q');
+        }
+        if self.black_kingside {
+            fen.push('k');
+        }
+        if self.black_queenside {
+            fen.push('q');
+        }
+        if fen == "" {
+            fen.push('-');
+        }
+        fen
+    }
+}
+
 #[derive(Debug)]
 pub struct CastlingAvailability {
     pub black_queenside: bool,

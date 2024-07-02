@@ -65,6 +65,13 @@ impl Color {
             Color::Black => Color::White,
         }
     }
+
+    fn to_fen(&self) -> char {
+        match self {
+            Color::White => 'w',
+            Color::Black => 'b',
+        }
+    }
 }
 
 #[allow(dead_code)]
