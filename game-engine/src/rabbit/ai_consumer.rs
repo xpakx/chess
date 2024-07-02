@@ -73,7 +73,7 @@ struct AIEvent {
 fn process_ai_event(message: AIEvent) -> EngineEvent {
     let mut board = generate_bit_board(&message.game_state).unwrap().board; // TODO
     let mut engine = get_engine(EngineType::Random);
-    let mov = engine.get_move(&board, &message.color);
+    let mov = engine.get_move(&mut board, &message.color);
     board.apply_move(&mov, &message.color);
     let mov_string = move_to_string(&mut board, &mov, &message.color, false, false);
 

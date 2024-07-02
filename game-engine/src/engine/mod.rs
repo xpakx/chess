@@ -453,7 +453,7 @@ impl BitBoard {
 
 pub trait Engine {
     fn get_name(&self) -> String;
-    fn get_move(&mut self, board: &BitBoard, color: &Color) -> Move;
+    fn get_move(&mut self, board: &mut BitBoard, color: &Color) -> Move;
 }
 
 pub enum EngineType {
