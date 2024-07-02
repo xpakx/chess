@@ -2,7 +2,7 @@ use std::u64;
 
 use crate::Color;
 
-use self::rules::{Move, Piece};
+use self::rules::{field_to_num, Move, Piece};
 mod random_engine;
 pub mod rules;
 
@@ -26,13 +26,21 @@ pub struct BitBoard {
 pub struct FEN {
     pub board: BitBoard,
     pub color: Color,
-    pub castling: u8,
+    pub castling: CastlingAvailability,
     pub enpassant: Option<u8>,
-    pub halfmove: usize,
+    pub halfmoves: usize,
     pub moves: usize,
 }
 
-pub fn generate_bit_board(fen_board: String) -> Result<FEN, String> {
+#[derive(Debug)]
+pub struct CastlingAvailability {
+    pub black_queenside: bool,
+    pub black_kingside: bool,
+    pub white_queenside: bool,
+    pub white_kingside: bool,
+}
+
+pub fn generate_bit_board(fen_board: &String) -> Result<FEN, String> {
     let mut fen_notation = fen_board.split(" ");
 
     // board
@@ -56,8 +64,54 @@ pub fn generate_bit_board(fen_board: String) -> Result<FEN, String> {
         "b" => Color::Black,
         _ => return Err("Incorrect color!".into()),
     };
-    
-    Ok(FEN { board, color, castling: 0, enpassant: None, halfmove: 0, moves: 0 })
+
+    // castling
+    let castling = fen_notation.next();
+    let Some(castling) = castling else {
+        return  Err("No castling information".into())
+    };
+    let castling = match castling {
+        "-" => CastlingAvailability {black_kingside: false, black_queenside: false, white_kingside: false, white_queenside: false},
+        castling => CastlingAvailability {
+                black_kingside: castling.contains("k"), 
+                black_queenside: castling.contains("q"),
+                white_kingside: castling.contains("K"),
+                white_queenside: castling.contains("Q"),
+            },
+    };
+
+    // enpassant
+    let enpassant = fen_notation.next();
+    let Some(enpassant) = enpassant else {
+        return  Err("No enpassant information".into())
+    };
+    let enpassant = match enpassant {
+        "-" => None,
+        enpassant => Some(field_to_num(enpassant)),
+    };
+
+    // halfmove clock
+    let halfmove_clock = fen_notation.next();
+    let Some(halfmove_clock) = halfmove_clock else {
+        return  Err("No halfmove count".into())
+    };
+    let halfmoves = halfmove_clock.parse::<usize>();
+    let Ok(halfmoves) = halfmoves else {
+        return  Err("Corrupted halfmove count".into())
+    };
+
+    // move clock
+    let move_clock = fen_notation.next();
+    let Some(move_clock) = move_clock else {
+        return  Err("No move count".into())
+    };
+    let moves = move_clock.parse::<usize>();
+    let Ok(moves) = moves else {
+        return  Err("Corrupted move count".into())
+    };
+
+   
+    Ok(FEN { board, color, castling, enpassant, halfmoves, moves })
 }
 
 

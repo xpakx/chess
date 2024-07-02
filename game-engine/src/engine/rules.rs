@@ -617,7 +617,7 @@ fn file_to_num(file: char) -> u8 {
     7 - (file as u8 - b'a')
 }
 
-fn field_to_num(field: &str) -> u8 {
+pub fn field_to_num(field: &str) -> u8 {
     let mut c = field.chars();
     let file = c.next().unwrap();
     let rank = c.next().unwrap();
