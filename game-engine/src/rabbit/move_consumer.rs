@@ -79,7 +79,7 @@ pub struct EngineEvent {
 }
 
 fn process_move(message: MoveEvent) -> EngineEvent {
-    let mut board = generate_bit_board(message.game_state.clone()).unwrap(); // TODO
+    let mut board = generate_bit_board(message.game_state.clone()).unwrap().board; // TODO
     let mov = string_to_move(&mut board, message.mov.clone(), &message.color);
     let legal = mov.is_ok();
     let (new_state, finished) = match mov {

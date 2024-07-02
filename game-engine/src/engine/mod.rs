@@ -23,7 +23,45 @@ pub struct BitBoard {
     pub black_king: u64,
 }
 
-pub fn generate_bit_board(fen_board: String) -> Result<BitBoard, String> {
+pub struct FEN {
+    pub board: BitBoard,
+    pub color: Color,
+    pub castling: u8,
+    pub enpassant: Option<u8>,
+    pub halfmove: usize,
+    pub moves: usize,
+}
+
+pub fn generate_bit_board(fen_board: String) -> Result<FEN, String> {
+    let mut fen_notation = fen_board.split(" ");
+
+    // board
+    let board_def = fen_notation.next();
+    let Some(board_def) = board_def else {
+        return  Err("No board representation".into())
+    };
+
+    let board = generate_board_from_fen(board_def);
+    let Ok(board) = board else {
+        return Err(board.err().unwrap())
+    };
+
+    // color
+    let color = fen_notation.next();
+    let Some(color) = color else {
+        return  Err("No color information".into())
+    };
+    let color = match color {
+        "w" => Color::White,
+        "b" => Color::Black,
+        _ => return Err("Incorrect color!".into()),
+    };
+    
+    Ok(FEN { board, color, castling: 0, enpassant: None, halfmove: 0, moves: 0 })
+}
+
+
+fn generate_board_from_fen(board_def: &str) -> Result<BitBoard, String> {
     let mut white_pawns = 0;
     let mut white_knights = 0;
     let mut white_bishops = 0;
@@ -40,10 +78,6 @@ pub fn generate_bit_board(fen_board: String) -> Result<BitBoard, String> {
 
     let mut index: u64 = 1 << 63;
 
-    let board_def = fen_board.split(" ").next();
-    let Some(board_def) = board_def else {
-        return  Err("".into())
-    };
     let ranks = board_def.split("/");
     for rank in ranks {
         for a in rank.chars() {

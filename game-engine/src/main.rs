@@ -9,10 +9,13 @@ use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() {
-    let mut board = generate_bit_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".into()).unwrap();
+    let fen = generate_bit_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".into()).unwrap();
+
+    let mut board = fen.board;
 
     println!("Board:");
     print_board(&board);
+    println!("{:?}", fen.color);
 
     let moves = get_possible_moves(&board, &Color::White);
     println!("{} moves:", moves.len());
