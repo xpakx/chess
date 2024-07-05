@@ -133,6 +133,7 @@ public class GameService {
             return;
         }
 
+        game.setCurrentState(event.getNewState());
         if (event.isFinished()) {
             game.setFinished(true);
             if (game.isFirstUserTurn()) {
