@@ -279,13 +279,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     let type = `${color}${piece}`;
     let candidates: number[][] = [];
 
-    if(startRank) {
+    if(startRank && !startFile) {
       for(let i = 0; i<8; i++) {
         if(this.board[startRank][i] == type) {
           candidates.push([startRank, i]);
         }
       }
-    } else if(startFile) {
+    } else if(startFile && !startRank) {
       for(let i = 0; i<8; i++) {
         if(this.board[i][startFile] == type) {
           candidates.push([i, startFile]);
