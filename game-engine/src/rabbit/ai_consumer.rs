@@ -1,7 +1,7 @@
 use lapin::{message::DeliveryResult, options::BasicAckOptions, Channel};
 use serde::{Deserialize, Serialize};
 
-use crate::{engine::{generate_bit_board, get_engine, rules::{is_game_drawn, is_game_won, move_to_string}, EngineType}, rabbit::DESTINATION_EXCHANGE, Color};
+use crate::{engine::{generate_bit_board, get_engine, rules::{is_game_drawn, is_game_won, move_to_string, Piece}, EngineType}, rabbit::DESTINATION_EXCHANGE, Color};
 
 use super::move_consumer::EngineEvent;
 
@@ -70,7 +70,8 @@ struct AIEvent {
 }
 
 fn process_ai_event(message: AIEvent) -> EngineEvent {
-    let mut board = generate_bit_board(&message.game_state).unwrap().board; // TODO
+    let fen = generate_bit_board(&message.game_state).unwrap(); // TODO
+    let mut board = fen.board; 
     let mut engine = get_engine(EngineType::Random);
     let mov = engine.get_move(&mut board, &message.color);
     board.apply_move(&mov, &message.color);
@@ -80,9 +81,24 @@ fn process_ai_event(message: AIEvent) -> EngineEvent {
     let drawn = !won && is_game_drawn(&board, &message.color);
     let finished = won || drawn;
 
+    let board = board.to_fen();
+    let color = message.color.opposite().to_fen();
+    let castling = fen.castling.after_move(&mov, &message.color).to_fen();
+    let enpassant = "-"; // TODO
+    let halfmoves = match (mov.piece, mov.capture) {
+        (Piece::Pawn, _) => 0,
+        (_, Some(_)) => 0,
+        _ => fen.halfmoves + 1,
+    };
+    let moves = match &message.color {
+        Color::White => fen.moves,
+        Color::Black => fen.moves + 1,
+    };
+    let new_state = format!("{board} {color} {castling} {enpassant} {halfmoves} {moves}");
+
     EngineEvent {
         game_id: message.game_id,
-        new_state: board.to_fen(),
+        new_state,
         mov: mov_string,
         legal: true,
         finished,
