@@ -151,6 +151,10 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   makeMove(message: MoveMessage) {
+    if(!message.legal) {
+      this.toast.createToast({id: `move${message.move}`, type: "info", message:`move ${message.move} illegal!`});
+      return;
+    }
     if(message.move.startsWith("O")) {
       let move = this.parseCastling(message.move, message.color);
       if (!move) {
