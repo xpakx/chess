@@ -11,4 +11,5 @@ public class EngineMoveEvent {
     String move;
     boolean finished;
     String newState;
+    Color color;
 }

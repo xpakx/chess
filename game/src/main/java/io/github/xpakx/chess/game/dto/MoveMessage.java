@@ -23,8 +23,9 @@ public class MoveMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String winner;
+    private Color color;
 
-    public static MoveMessage of(String move, String username) {
+    public static MoveMessage of(String move, String username, Color color) {
         return new MoveMessage(
                 username,
                 move,
@@ -32,12 +33,13 @@ public class MoveMessage {
                 null,
                 false,
                 false,
-                null
+                null,
+                color
         );
     }
 
-    public static MoveMessage rejected(String move, String username, String msg) {
-        var moveMessage = of(move, username);
+    public static MoveMessage rejected(String move, String username, Color color, String msg) {
+        var moveMessage = of(move, username, color);
         moveMessage.setMessage(msg);
         moveMessage.setLegal(false);
         return moveMessage;

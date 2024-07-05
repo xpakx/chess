@@ -23,28 +23,29 @@ public class GameService {
     Logger logger = LoggerFactory.getLogger(GameService.class);
 
     public MoveMessage move(Long gameId, MoveRequest move, String username) {
+        // TODO: fix colors
         var gameOpt = getGameById(gameId);
         if (gameOpt.isEmpty()) {
             gamePublisher.getGame(gameId);
-            var msg = MoveMessage.rejected(move.getMove(), username, "Game not loaded, please wait!");
+            var msg = MoveMessage.rejected(move.getMove(), username, Color.White, "Game not loaded, please wait!");
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
             return msg;
         }
         var game = gameOpt.get();
 
         if (!game.isUserInGame(username)) {
-            var msg = MoveMessage.rejected(move.getMove(), username, "Cannot move!");
+            var msg = MoveMessage.rejected(move.getMove(), username, Color.White, "Cannot move!");
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
             return msg;
         }
         if (game.isFinished()) {
-            var msg =  MoveMessage.rejected(move.getMove(), username, "Game is finished!");
+            var msg =  MoveMessage.rejected(move.getMove(), username, Color.White, "Game is finished!");
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
             return msg;
         }
 
         if (game.isBlocked() || !canPlayerMove(game, move, username)) {
-            var msg = MoveMessage.rejected(move.getMove(), username, "Cannot move now!");
+            var msg = MoveMessage.rejected(move.getMove(), username, Color.White, "Cannot move now!");
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameId, msg);
             return msg;
         }
@@ -53,7 +54,7 @@ public class GameService {
 
         movePublisher.sendMove(game, move.getMove());
 
-        return MoveMessage.of(move.getMove(), username);
+        return MoveMessage.of(move.getMove(), username, game.getColor());
     }
 
     public Optional<GameState> getGameById(Long id) {
@@ -124,6 +125,7 @@ public class GameService {
                     MoveMessage.rejected(
                             event.getMove(),
                             game.getCurrentPlayer(),
+                            event.getColor(),
                             "Move is illegal!"
                     )
             );
@@ -139,7 +141,7 @@ public class GameService {
                 game.setLost(true);
             }
         }
-        var msg = MoveMessage.of(event.getMove(), game.getCurrentPlayer());
+        var msg = MoveMessage.of(event.getMove(), game.getCurrentPlayer(), event.getColor());
         if (game.isFinished()) {
             msg.setFinished(true);
             msg.setWon(game.isWon());
