@@ -54,7 +54,7 @@ export class AppComponent {
 
   onGameCreation(response: GameResponse) {
     if(this.aiGame) {
-      this.openGame(response.gameId);
+      this.openGame(response.id);
     }
   }
 
