@@ -64,7 +64,6 @@ pub fn set_ai_delegate(consumer: lapin::Consumer, channel: Channel) {
 struct AIEvent {
     game_id: usize,
     game_state: String,
-    noncapture_moves: usize,
     #[serde(rename = "type")]
     ai_type: String,
     color: Color,
@@ -87,5 +86,6 @@ fn process_ai_event(message: AIEvent) -> EngineEvent {
         mov: mov_string,
         legal: true,
         finished,
+        color: message.color,
     }
 }

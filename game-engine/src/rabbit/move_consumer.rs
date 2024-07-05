@@ -63,7 +63,6 @@ struct MoveEvent {
     game_state: String,
     #[serde(rename = "move")]
     mov: String,
-    noncapture_moves: usize,
     color: Color,
 }
 
@@ -76,11 +75,22 @@ pub struct EngineEvent {
     #[serde(rename = "move")]
     pub mov: String,
     pub finished: bool,
+    pub color: Color,
 }
 
 fn process_move(message: MoveEvent) -> EngineEvent {
     let fen = generate_bit_board(&message.game_state).unwrap();
     let mut board = fen.board; // TODO
+    if fen.color != message.color {
+        return EngineEvent {
+            game_id: message.game_id,
+            new_state: message.game_state,
+            mov: message.mov,
+            legal: false,
+            finished: false,
+            color: message.color,
+        }
+    }
     let mov = string_to_move(&mut board, message.mov.clone(), &message.color);
     let legal = mov.is_ok();
     let (new_state, finished) = match mov {
@@ -120,5 +130,6 @@ fn process_move(message: MoveEvent) -> EngineEvent {
         mov: message.mov,
         legal,
         finished,
+        color: message.color,
     }
 }

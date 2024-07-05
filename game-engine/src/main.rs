@@ -21,8 +21,6 @@ async fn main() {
     println!("{:?}", fen.halfmoves);
     println!("{:?}", fen.moves);
 
-    return;
-
     let moves = get_possible_moves(&board, &Color::White);
     println!("{} moves:", moves.len());
     for mov in moves {
