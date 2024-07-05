@@ -537,13 +537,13 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 (Some(file), None) => {
                     let file = file_to_num(file.chars().next().unwrap());
                     let move_map = get_moves_from(board, &piece, have_capture, to, color);
-                    let file_map = ROOK_RAYS[0+file as usize][NORTH] | (1 << (0+file));
+                    let file_map = ROOK_RAYS[NORTH][0+file as usize] | (1 << (0+file));
                     move_map & file_map
                 },
                 (None, Some(rank)) => {
                     let rank = file_to_num(rank.chars().next().unwrap());
                     let move_map = get_moves_from(board, &piece, have_capture, to, color);
-                    let rank_map = ROOK_RAYS[(rank as usize)*8 + 0][WEST] | (1 << (0+rank*8));
+                    let rank_map = ROOK_RAYS[WEST][(rank as usize)*8 + 0] | (1 << (0+rank*8));
                     move_map & rank_map
                 },
                 (None, None) => {
