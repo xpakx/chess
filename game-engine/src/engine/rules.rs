@@ -260,12 +260,12 @@ pub fn get_king_moves(king: &u64, targets: &u64) -> u64 {
     let mut result: u64 = 0;
     result = result | (king << 8);
     result = result | (king >> 8);
-    result = result | ((king << 1) & NOT_A_FILE);
-    result = result | ((king << 9) & NOT_A_FILE);
-    result = result | ((king >> 7) & NOT_A_FILE);
-    result = result | ((king >> 1) & NOT_H_FILE);
-    result = result | ((king >> 9) & NOT_H_FILE);
-    result = result | ((king << 7) & NOT_H_FILE);
+    result = result | ((king << 1) & NOT_H_FILE);
+    result = result | ((king << 9) & NOT_H_FILE);
+    result = result | ((king >> 7) & NOT_H_FILE);
+    result = result | ((king >> 1) & NOT_A_FILE);
+    result = result | ((king >> 9) & NOT_A_FILE);
+    result = result | ((king << 7) & NOT_A_FILE);
     result & targets
 }
 
