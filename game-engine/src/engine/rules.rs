@@ -793,4 +793,130 @@ mod tests {
         assert_eq!(get_for_king("8/K7/8/8/8/8/8/8", Color::White), 0xc040c00000000000);
         assert_eq!(get_for_king("8/7K/8/8/8/8/8/8", Color::White), 0x0302030000000000);
     }
+
+    fn get_single_pushes(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = !board.get_black() & !board.get_white();
+        let moves = match color {
+            Color::White => get_white_pawn_single_pushes(&board.white_pawns, &targets),
+            Color::Black => get_black_pawn_single_pushes(&board.black_pawns, &targets),
+        };
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_pawn_single_pushes() {
+        assert_eq!(get_single_pushes("8/8/8/8/8/8/P7/8", Color::White), 0x0000000000800000);
+        assert_eq!(get_single_pushes("8/p7/8/8/8/8/8/8", Color::Black), 0x0000800000000000);
+        assert_eq!(get_single_pushes("8/8/8/8/8/K7/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_single_pushes("8/8/8/8/8/k7/P7/8", Color::White), 0x0000000000000000);
+    }
+
+    fn get_double_pushes(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = !board.get_black() & !board.get_white();
+        let moves = match color {
+            Color::White => get_white_pawn_double_pushes(&board.white_pawns, &targets),
+            Color::Black => get_black_pawn_double_pushes(&board.black_pawns, &targets),
+        };
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_pawn_double_pushes() {
+        assert_eq!(get_double_pushes("8/8/8/8/8/8/P7/8", Color::White), 0x0000000080000000);
+        assert_eq!(get_double_pushes("8/p7/8/8/8/8/8/8", Color::Black), 0x0000008000000000);
+        assert_eq!(get_double_pushes("8/8/8/8/8/K7/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_double_pushes("8/8/8/8/8/k7/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_double_pushes("8/8/8/8/K7/8/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_double_pushes("8/8/8/8/k7/8/P7/8", Color::White), 0x0000000000000000);
+    }
+
+    fn get_east_captures(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = match color {
+            Color::White => board.get_black(),
+            Color::Black => board.get_white(),
+        };
+        let moves = match color {
+            Color::White => get_white_pawn_east_attacks(&board.white_pawns, &targets),
+            Color::Black => get_black_pawn_east_attacks(&board.black_pawns, &targets),
+        };
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_pawn_east_captures() {
+        assert_eq!(get_east_captures("8/8/8/8/8/4n3/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/2n5/3P4/8", Color::White), 0x0000000000200000);
+        assert_eq!(get_east_captures("8/8/8/8/8/1n6/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/7n/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/4N3/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/2N5/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/8/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/3P4/4n3/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/8/8/8/8/3P4/2n5/8", Color::White), 0x0000000000000000);
+
+        assert_eq!(get_east_captures("8/3p4/4N3/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/2p4/2N5/8/8/8/8/8", Color::Black), 0x0000400000000000);
+        assert_eq!(get_east_captures("8/p7/1N6/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/p7/7N/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/3p4/4n3/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/3p4/2n5/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/p7/8/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/4N3/3p4/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_east_captures("8/2N5/3p4/8/8/3P8/8/8", Color::Black), 0x0000000000000000);
+    }
+
+    fn get_west_captures(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = match color {
+            Color::White => board.get_black(),
+            Color::Black => board.get_white(),
+        };
+        let moves = match color {
+            Color::White => get_white_pawn_west_attacks(&board.white_pawns, &targets),
+            Color::Black => get_black_pawn_west_attacks(&board.black_pawns, &targets),
+        };
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_pawn_west_captures() {
+        assert_eq!(get_west_captures("8/8/8/8/8/4n3/3P4/8", Color::White), 0x0000000000080000);
+        assert_eq!(get_west_captures("8/8/8/8/8/2n5/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/1n6/P7/8", Color::White), 0x0000000000400000);
+        assert_eq!(get_west_captures("8/8/8/8/8/7n/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/4N3/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/2N5/3P4/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/8/P7/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/3P4/4n3/8", Color::White), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/8/8/8/8/3P4/2n5/8", Color::White), 0x0000000000000000);
+
+        assert_eq!(get_west_captures("8/3p4/4N3/8/8/8/8/8", Color::Black), 0x0000080000000000);
+        assert_eq!(get_west_captures("8/2p4/2N5/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/p7/1N6/8/8/8/8/8", Color::Black), 0x0000400000000000);
+        assert_eq!(get_west_captures("8/p7/7N/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/3p4/4n3/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/3p4/2n5/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/p7/8/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/4N3/3p4/8/8/8/8/8", Color::Black), 0x0000000000000000);
+        assert_eq!(get_west_captures("8/2N5/3p4/8/8/3P8/8/8", Color::Black), 0x0000000000000000);
+    }
 }
