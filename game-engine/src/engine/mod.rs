@@ -465,3 +465,108 @@ pub fn get_engine(engine: EngineType) -> Box<dyn Engine> {
         EngineType::Random => Box::new(random_engine::RandomEngine::new()),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_bit_board() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        assert_eq!(fen_obj.color, Color::White);
+        assert_eq!(fen_obj.castling.to_fen(), "KQkq");
+        assert_eq!(fen_obj.enpassant, None);
+        assert_eq!(fen_obj.halfmoves, 0);
+        assert_eq!(fen_obj.moves, 1);
+    }
+
+    #[test]
+    fn test_generate_bit_board_black_move() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.color, Color::Black);
+    }
+
+    #[test]
+    fn test_generate_bit_board_wrong_color() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR t KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen);
+        assert!(fen_obj.is_err());
+        let err = fen_obj.err().unwrap();
+        assert!(err.contains("Incorrect color"));
+    }
+
+    #[test]
+    fn test_generate_bit_board_castling() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.castling.to_fen(), "Kkq");
+    }
+
+    #[test]
+    fn test_generate_bit_board_no_castling() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.castling.to_fen(), "-");
+    }
+
+    #[test]
+    fn test_generate_bit_board_enpassant() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert!(fen_obj.enpassant.is_some());
+        let enpassant = fen_obj.enpassant.unwrap();
+        assert_eq!(enpassant, 19);
+    }
+
+    #[test]
+    fn test_generate_bit_board_empty_board() {
+        let fen = "8/8/8/8/8/8/8/8 w - - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/8/8");
+    }
+
+    #[test]
+    fn test_generate_bit_board_middle_game_position() {
+        let fen = "r1bqkbnr/pppppppp/n7/8/8/N7/PPPPPPPP/R1BQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "r1bqkbnr/pppppppp/n7/8/8/N7/PPPPPPPP/R1BQKBNR");
+    }
+
+    #[test]
+    fn test_generate_bit_board_end_game_position() {
+        let fen = "8/8/8/8/8/8/2k5/3K4 w - - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/2k5/3K4");
+    }
+
+    #[test]
+    fn test_generate_bit_board_castling_rights() {
+        let fen = "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "r3k2r/8/8/8/8/8/8/R3K2R");
+    }
+
+    #[test]
+    fn test_generate_bit_board_en_passant_target_square() {
+        let fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
+    }
+
+    #[test]
+    fn test_generate_bit_board_halfmove_and_fullmove_clock() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 5 10".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    }
+
+    #[test]
+    fn test_generate_bit_board_complex_position() {
+        let fen = "rnbq1bnr/pppp1ppp/4k3/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQ - 2 6".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.to_fen(), "rnbq1bnr/pppp1ppp/4k3/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R");
+    }
+}
