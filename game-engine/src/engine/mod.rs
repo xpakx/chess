@@ -778,4 +778,36 @@ mod tests {
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "KQk");
     }
+
+    #[test]
+    fn test_check_capture_white() {
+        let fen = "8/8/8/8/8/8/8/R3K3 w Q - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        let target = 1 << 7;
+        assert_eq!(fen_obj.board.check_capture(&target, &Color::Black), Some(Piece::Rook));
+    }
+
+    #[test]
+    fn test_check_capture_white_no_capture() {
+        let fen = "8/8/8/8/8/8/8/R3K3 w Q - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        let target = 1 << 6;
+        assert_eq!(fen_obj.board.check_capture(&target, &Color::Black), None);
+    }
+
+    #[test]
+    fn test_check_capture_black() {
+        let fen = "8/8/8/8/8/8/8/r3k3 w Q - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        let target = 1 << 7;
+        assert_eq!(fen_obj.board.check_capture(&target, &Color::White), Some(Piece::Rook));
+    }
+
+    #[test]
+    fn test_check_capture_black_no_capture() {
+        let fen = "8/8/8/8/8/8/8/r3k3 w Q - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        let target = 1 << 6;
+        assert_eq!(fen_obj.board.check_capture(&target, &Color::White), None);
+    }
 }
