@@ -569,4 +569,43 @@ mod tests {
         let fen_obj = generate_bit_board(&fen).unwrap();
         assert_eq!(fen_obj.board.to_fen(), "rnbq1bnr/pppp1ppp/4k3/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R");
     }
+
+    #[test]
+    fn test_apply_move_no_capture() {
+        let fen = "8/8/8/8/8/8/P7/R3K2R w KQ - 0 1".to_string();
+        let mut fen_obj = generate_bit_board(&fen).unwrap();
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        fen_obj.board.apply_move(&mov, &Color::White);
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/3RK2R");
+    }
+
+    #[test]
+    fn test_unmove_no_capture() {
+        let fen = "8/8/8/8/8/8/P7/R3K2R w KQ - 0 1".to_string();
+        let mut fen_obj = generate_bit_board(&fen).unwrap();
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        fen_obj.board.apply_move(&mov, &Color::White);
+        fen_obj.board.apply_move(&mov, &Color::White);
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/R3K2R");
+    }
+
+    #[test]
+    fn test_apply_move_capture() {
+        let fen = "8/8/8/8/8/8/P7/R2rK2R w KQ - 0 1".to_string();
+        let mut fen_obj = generate_bit_board(&fen).unwrap();
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        fen_obj.board.apply_move(&mov, &Color::White);
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/3RK2R");
+    }
+
+    #[test]
+    fn test_unmove_capture() {
+        let fen = "8/8/8/8/8/8/P7/R2rK2R w KQ - 0 1".to_string();
+        let mut fen_obj = generate_bit_board(&fen).unwrap();
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        fen_obj.board.apply_move(&mov, &Color::White);
+        fen_obj.board.apply_move(&mov, &Color::White);
+        assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/R2rK2R");
+    }
+
 }
