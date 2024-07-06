@@ -783,4 +783,12 @@ mod tests {
         let target = 1 << 6;
         assert_eq!(fen_obj.board.check_capture(&target, &Color::White), None);
     }
+
+     #[test]
+    fn test_field_to_num() {
+        assert_eq!(field_to_num("a1"), 7);
+        assert_eq!(field_to_num("a8"), 63);
+        assert_eq!(field_to_num("h1"), 0);
+        assert_eq!(field_to_num("h8"), 56);
+    }
 }
