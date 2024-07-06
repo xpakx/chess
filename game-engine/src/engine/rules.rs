@@ -106,7 +106,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Knight }); // TODO
+            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Knight });
         }
     }
 
@@ -125,7 +125,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece }); // TODO
+            result.push(Move { from, to, promotion: false, capture, castling: false, piece });
         }
     }
 
@@ -144,7 +144,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece }); // TODO
+            result.push(Move { from, to, promotion: false, capture, castling: false, piece });
         }
     }
 
@@ -155,7 +155,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
         let target = 1 << to;
         moves = moves & !target;
         let capture = board.check_capture(&target, color);
-        result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::King }); // TODO
+        result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::King });
     }
 
     if color == &Color::White {
@@ -165,7 +165,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to - 8;
             let pawn = 1 << to;
             single = single & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO: promotion
         }
 
         let mut double = get_white_pawn_double_pushes(&pawns, &empty);
@@ -174,7 +174,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to - 16;
             let pawn = 1 << to;
             double = double & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn });
         }
 
         // TODO: enpassant
@@ -213,7 +213,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to + 16;
             let pawn = 1 << to;
             double = double & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn });
         }
 
         // TODO: enpassant
@@ -918,5 +918,45 @@ mod tests {
         assert_eq!(get_west_captures("8/p7/8/8/8/8/8/8", Color::Black), 0x0000000000000000);
         assert_eq!(get_west_captures("8/4N3/3p4/8/8/8/8/8", Color::Black), 0x0000000000000000);
         assert_eq!(get_west_captures("8/2N5/3p4/8/8/3P8/8/8", Color::Black), 0x0000000000000000);
+    }
+
+    fn get_for_rook(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let occupied = board.get_white() | board.get_black();
+        let friendly = match color {
+            Color::White => board.get_white(),
+            Color::Black => board.get_black(),
+        };
+        let rooks = match color {
+            Color::White => board.white_rooks,
+            Color::Black => board.black_rooks,
+        };
+        let moves = get_rook_moves(&rooks, &occupied, &friendly);
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_rook_moves() {
+        assert_eq!(get_for_rook("8/8/8/3R4/8/8/8/8", Color::White), 0x101010ef10101010);
+        assert_eq!(get_for_rook("8/8/8/8/3r4/8/8/8", Color::Black), 0x10101010ef101010);
+        assert_eq!(get_for_rook("8/3R4/8/8/8/8/8/8", Color::White), 0x10ef101010101010);
+        assert_eq!(get_for_rook("8/R7/8/8/8/8/8/8", Color::White), 0x807f808080808080);
+        assert_eq!(get_for_rook("8/7R/8/8/8/8/8/8", Color::White), 0x01fe010101010101);
+
+        assert_eq!(get_for_rook("8/8/8/2nR4/8/8/8/8", Color::White), 0x1010102f10101010);
+        assert_eq!(get_for_rook("8/3n4/8/3R4/8/8/8/8", Color::White), 0x001010ef10101010);
+        assert_eq!(get_for_rook("8/8/3n4/3R4/8/8/8/8", Color::White), 0x000010ef10101010);
+        assert_eq!(get_for_rook("8/8/8/3R4/8/2N5/8/8", Color::White), 0x101010ef10101010);
+        assert_eq!(get_for_rook("8/8/8/3R4/8/3N4/8/8", Color::White), 0x101010ef10000000);
+
+        assert_eq!(get_for_rook("8/8/8/2Nr4/8/8/8/8", Color::Black), 0x1010102f10101010);
+        assert_eq!(get_for_rook("8/3N4/8/3r4/8/8/8/8", Color::Black), 0x001010ef10101010);
+        assert_eq!(get_for_rook("8/8/3N4/3r4/8/8/8/8", Color::Black), 0x000010ef10101010);
+        assert_eq!(get_for_rook("8/8/8/3r4/8/2n5/8/8", Color::Black), 0x101010ef10101010);
+        assert_eq!(get_for_rook("8/8/8/3r4/8/3n4/8/8", Color::Black), 0x101010ef10000000);
     }
 }
