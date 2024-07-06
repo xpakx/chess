@@ -739,3 +739,58 @@ pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
 
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{engine::generate_board_from_fen, print_bitboard, print_board};
+
+    use super::*;
+
+    fn get_for_knight(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = !board.get_black() | board.get_white();
+        let knights = match color {
+            Color::White => board.white_knights,
+            Color::Black => board.black_knights,
+        };
+        let moves = get_knight_moves(&knights, &targets);
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_knight_moves_no_capture() {
+        assert_eq!(get_for_knight("8/8/8/3N4/8/8/8/8", Color::White), 0x0028440044280000);
+        assert_eq!(get_for_knight("8/8/8/8/3n4/8/8/8", Color::Black), 0x0000284400442800);
+        assert_eq!(get_for_knight("8/3N4/8/8/8/8/8/8", Color::White), 0x4400442800000000);
+        assert_eq!(get_for_knight("8/1N6/8/8/8/8/8/8", Color::White), 0x100010a000000000);
+        assert_eq!(get_for_knight("8/6N1/8/8/8/8/8/8", Color::White), 0x0800080500000000);
+    }
+
+    fn get_for_king(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let targets = !board.get_black() | board.get_white();
+        let king = match color {
+            Color::White => board.white_king,
+            Color::Black => board.black_king,
+        };
+        let moves = get_king_moves(&king, &targets);
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_king_moves_no_capture() {
+        assert_eq!(get_for_king("8/8/8/3K4/8/8/8/8", Color::White), 0x0000382838000000);
+        assert_eq!(get_for_king("8/8/8/8/3k4/8/8/8", Color::Black), 0x0000003828380000);
+        assert_eq!(get_for_king("8/3K4/8/8/8/8/8/8", Color::White), 0x3828380000000000);
+        assert_eq!(get_for_king("8/K7/8/8/8/8/8/8", Color::White), 0xc040c00000000000);
+        assert_eq!(get_for_king("8/7K/8/8/8/8/8/8", Color::White), 0x0302030000000000);
+    }
+}

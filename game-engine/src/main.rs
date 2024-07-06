@@ -74,8 +74,8 @@ impl Color {
 
 #[allow(dead_code)]
 fn print_bitboard(bitboard: u64) {
-    for rank in 0..8 {
-        for file in 0..8 {
+    for rank in (0..8).rev() {
+        for file in (0..8).rev() {
             let square = rank * 8 + file;
             if bitboard & (1 << square) != 0 {
                 print!("1 ");
