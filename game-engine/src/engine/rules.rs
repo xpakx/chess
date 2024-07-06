@@ -552,14 +552,14 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             };
 
             let mut current = candidates;
-            let capture = board.get_capture(&(1<<to), color);
+            let capture = board.check_capture(&(1<<to), color);
             if (capture.is_none() && have_capture) || (capture.is_some() && !have_capture) {
                 return Err("Capture flag corrupted!".into())
             };
 
             let opp_color = color.opposite();
 
-            let capture = board.get_capture(&(1<<to), &opp_color);
+            let capture = board.check_capture(&(1<<to), &opp_color);
             if capture.is_some() {
                 return Err("Cannot move to field occupied by your own piece!".into())
             }
