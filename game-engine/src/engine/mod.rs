@@ -43,8 +43,8 @@ impl CastlingAvailability {
             false => false,
             true => match (&mov.piece, color) {
                 (Piece::King, Color::Black) => false,
-                (Piece::Rook, Color::Black) => mov.from == black_queenside_rook,
-                (_, Color::White) => mov.capture.is_some() && mov.to == black_queenside_rook,
+                (Piece::Rook, Color::Black) => !(mov.from == black_queenside_rook),
+                (_, Color::White) => !(mov.capture.is_some() && mov.to == black_queenside_rook),
                 _  => true,
             },
         };
@@ -52,17 +52,18 @@ impl CastlingAvailability {
             false => false,
             true => match (&mov.piece, color) {
                 (Piece::King, Color::Black) => false,
-                (Piece::Rook, Color::Black) => mov.from == black_kingside_rook,
-                (_, Color::White) => mov.capture.is_some() && mov.to == black_kingside_rook,
+                (Piece::Rook, Color::Black) => !(mov.from == black_kingside_rook),
+                (_, Color::White) => !(mov.capture.is_some() && mov.to == black_kingside_rook),
                 _  => true,
             },
         };
+
         let white_queenside = match self.white_queenside {
             false => false,
             true => match (&mov.piece, color) {
                 (Piece::King, Color::White) => false,
-                (Piece::Rook, Color::White) => mov.from == white_queenside_rook,
-                (_, Color::Black) => mov.capture.is_some() && mov.to == white_queenside_rook,
+                (Piece::Rook, Color::White) => !(mov.from == white_queenside_rook),
+                (_, Color::Black) => !(mov.capture.is_some() && mov.to == white_queenside_rook),
                 _  => true,
             },
         };
@@ -70,8 +71,8 @@ impl CastlingAvailability {
             false => false,
             true => match (&mov.piece, color) {
                 (Piece::King, Color::White) => false,
-                (Piece::Rook, Color::White) => mov.from == white_kingside_rook,
-                (_, Color::Black) => mov.capture.is_some() && mov.to == white_kingside_rook,
+                (Piece::Rook, Color::White) => !(mov.from == white_kingside_rook),
+                (_, Color::Black) => !(mov.capture.is_some() && mov.to == white_kingside_rook),
                 _  => true,
             },
         };
@@ -608,4 +609,173 @@ mod tests {
         assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/R2rK2R");
     }
 
+    #[test]
+    fn test_castling_availability_white_king_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 3, to: 4, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "kq");
+    }
+
+    #[test]
+    fn test_castling_availability_black_king_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "KQ");
+    }
+
+    #[test]
+    fn test_castling_no_castling() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: false,
+            white_kingside: false,
+        };
+        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "-");
+    }
+
+    #[test]
+    fn test_castling_availability_white_kingside_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 0, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "Qkq");
+    }
+
+    #[test]
+    fn test_castling_availability_white_queenside_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 7, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "Kkq");
+    }
+
+    #[test]
+    fn test_castling_availability_white_free_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "KQkq");
+    }
+
+
+    #[test]
+    fn test_castling_availability_black_kingside_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 56, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "KQq");
+    }
+
+    #[test]
+    fn test_castling_availability_black_queenside_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 63, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "KQk");
+    }
+
+    #[test]
+    fn test_castling_availability_black_free_rook_moves() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "KQkq");
+    }
+
+    #[test]
+    fn test_castling_availability_white_kingside_rook_captured() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 60, to: 0, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "Qkq");
+    }
+
+    #[test]
+    fn test_castling_availability_white_queenside_rook_captured() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 60, to: 7, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::Black);
+        assert_eq!(updated_castling.to_fen(), "Kkq");
+    }
+
+    #[test]
+    fn test_castling_availability_black_kingside_rook_captured() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 60, to: 56, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "KQq");
+    }
+
+    #[test]
+    fn test_castling_availability_black_queenside_rook_captured() {
+        let castling = CastlingAvailability {
+            black_queenside: true,
+            black_kingside: true,
+            white_queenside: true,
+            white_kingside: true,
+        };
+        let mov = Move { from: 60, to: 63, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let updated_castling = castling.after_move(&mov, &Color::White);
+        assert_eq!(updated_castling.to_fen(), "KQk");
+    }
 }
