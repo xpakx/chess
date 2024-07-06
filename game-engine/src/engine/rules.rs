@@ -87,9 +87,9 @@ pub struct Move {
 pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
         Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
-                       board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
+                       board.get_white()),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
-                       board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
+                       board.get_black()),
     };
     let mut result = Vec::new();
     let mut current = knights;

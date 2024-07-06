@@ -423,6 +423,14 @@ impl BitBoard {
             Color::White => self.white_king,
         }
     }
+
+    pub fn get_white(&self) -> u64 {
+        self.white_pawns | self.white_knights | self.white_bishops | self.white_rooks | self.white_queens | self.white_king
+    }
+
+    pub fn get_black(&self) -> u64 {
+        self.black_pawns | self.black_knights | self.black_bishops | self.black_rooks | self.black_queens | self.black_king
+    }
 }
 
 pub trait Engine {
