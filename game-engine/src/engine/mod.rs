@@ -784,11 +784,51 @@ mod tests {
         assert_eq!(fen_obj.board.check_capture(&target, &Color::White), None);
     }
 
-     #[test]
+    #[test]
     fn test_field_to_num() {
         assert_eq!(field_to_num("a1"), 7);
         assert_eq!(field_to_num("a8"), 63);
         assert_eq!(field_to_num("h1"), 0);
         assert_eq!(field_to_num("h8"), 56);
+    }
+
+    #[test]
+    fn test_get_bitboard_by_piece_white() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Pawn, &Color::White), 0x0000_0000_0000_FF00);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Knight, &Color::White), 0x0000_0000_0000_0042);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Bishop, &Color::White), 0x0000_0000_0000_0024);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Rook, &Color::White), 0x0000_0000_0000_0081);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Queen, &Color::White), 0x0000_0000_0000_0010);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::King, &Color::White), 0x0000_0000_0000_0008);
+    }
+
+    #[test]
+    fn test_get_bitboard_by_piece_black() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Pawn, &Color::Black), 0x00FF_0000_0000_0000);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Knight, &Color::Black), 0x4200_0000_0000_0000);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Bishop, &Color::Black), 0x2400_0000_0000_0000);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Rook, &Color::Black), 0x8100_0000_0000_0000);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::Queen, &Color::Black), 0x1000_0000_0000_0000);
+        assert_eq!(fen_obj.board.get_bitboard_by_piece(&Piece::King, &Color::Black), 0x0800_0000_0000_0000);
+    }
+
+    #[test]
+    fn test_get_king_by_color_white() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.get_king_by_color(&Color::White), 0x0000_0000_0000_0008);
+    }
+
+    #[test]
+    fn test_get_king_by_color_black() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
+        let fen_obj = generate_bit_board(&fen).unwrap();
+        assert_eq!(fen_obj.board.get_king_by_color(&Color::Black), 0x0800_0000_0000_0000);
     }
 }
