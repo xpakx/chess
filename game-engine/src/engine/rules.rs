@@ -959,4 +959,42 @@ mod tests {
         assert_eq!(get_for_rook("8/8/8/3r4/8/2n5/8/8", Color::Black), 0x101010ef10101010);
         assert_eq!(get_for_rook("8/8/8/3r4/8/3n4/8/8", Color::Black), 0x101010ef10000000);
     }
+
+    fn get_for_bishop(fen: &str, color: Color) -> u64 {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let occupied = board.get_white() | board.get_black();
+        let friendly = match color {
+            Color::White => board.get_white(),
+            Color::Black => board.get_black(),
+        };
+        let bishops = match color {
+            Color::White => board.white_bishops,
+            Color::Black => board.black_bishops,
+        };
+        let moves = get_bishop_moves(&bishops, &occupied, &friendly);
+        print_board(&board);
+        println!("");
+        print_bitboard(moves);
+        println!("{:#018x}", moves);
+        moves
+    }
+
+    #[test]
+    fn test_bishop_moves() {
+        assert_eq!(get_for_bishop("8/8/8/3B4/8/8/8/8", Color::White), 0x8244280028448201);
+        assert_eq!(get_for_bishop("8/8/8/8/3b4/8/8/8", Color::Black), 0x0182442800284482);
+        assert_eq!(get_for_bishop("8/3B4/8/8/8/8/8/8", Color::White), 0x2800284482010000);
+        assert_eq!(get_for_bishop("8/B7/8/8/8/8/8/8", Color::White), 0x4000402010080402);
+        assert_eq!(get_for_bishop("8/7B/8/8/8/8/8/8", Color::White), 0x0200020408102040);
+
+        assert_eq!(get_for_bishop("8/8/2n5/3B4/8/8/8/8", Color::White), 0x0204280028448201);
+        assert_eq!(get_for_bishop("8/5n2/8/3B4/8/8/8/8", Color::White), 0x8044280028448201);
+        assert_eq!(get_for_bishop("8/8/2N5/3B4/8/8/8/8", Color::White), 0x0204080028448201);
+        assert_eq!(get_for_bishop("8/5N2/8/3B4/8/8/8/8", Color::White), 0x8040280028448201);
+
+        assert_eq!(get_for_bishop("8/8/2n5/3b4/8/8/8/8", Color::Black), 0x0204080028448201);
+        assert_eq!(get_for_bishop("8/5n2/8/3b4/8/8/8/8", Color::Black), 0x8040280028448201);
+        assert_eq!(get_for_bishop("8/8/2N5/3b4/8/8/8/8", Color::Black), 0x0204280028448201);
+        assert_eq!(get_for_bishop("8/5N2/8/3b4/8/8/8/8", Color::Black), 0x8044280028448201);
+    }
 }
