@@ -1019,4 +1019,49 @@ mod tests {
         let moves = get_possible_moves(&board, &color);
         moves.len()
     }
+
+    #[test]
+    fn test_pawn_move() {
+        let mut board = generate_board_from_fen(&"8/8/8/8/8/8/4P3/8".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "e4".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("e2"));
+        assert_eq!(mov.to, field_to_num("e4"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, None);
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Pawn);
+    }
+
+    #[test]
+    fn test_knight_move() {
+        let mut board = generate_board_from_fen(&"8/8/8/8/8/8/8/6N1".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "Ne2".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("g1"));
+        assert_eq!(mov.to, field_to_num("e2"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, None);
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Knight);
+    }
+
+    #[test]
+    fn test_capture_move() {
+        let mut board = generate_board_from_fen(&"8/8/3p4/4P3/8/8/8/8".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "xd6".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("e5"));
+        assert_eq!(mov.to, field_to_num("d6"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, Some(Piece::Pawn));
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Pawn);
+    }
 }
