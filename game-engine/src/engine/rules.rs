@@ -546,9 +546,9 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                     move_map & file_map
                 },
                 (None, Some(rank)) => {
-                    let rank = file_to_num(rank.chars().next().unwrap());
+                    let rank = rank_to_num(rank.chars().next().unwrap());
                     let move_map = get_moves_from(board, &piece, have_capture, to, color);
-                    let rank_map = ROOK_RAYS[WEST][(rank as usize)*8 + 0] | (1 << (0+rank*8));
+                    let rank_map = ROOK_RAYS[EAST][(rank as usize)*8 + 0] | (1 << (0+rank*8));
                     move_map & rank_map
                 },
                 (None, None) => {
