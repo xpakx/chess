@@ -532,7 +532,12 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
 
             let mut candidates = match (from_file, from_rank) {
                 (Some(file), Some(rank)) => {
-                    1 << field_to_num(format!("{}{}", file, rank).as_str())
+                    let cand = 1 << field_to_num(format!("{}{}", file, rank).as_str());
+                    let orig = board.check_capture(&cand, &color.opposite());
+                    if orig != Some(piece) {
+                        return Err("Wrong start square".into());
+                    }
+                    cand
                 },
                 (Some(file), None) => {
                     let file = file_to_num(file.chars().next().unwrap());
