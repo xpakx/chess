@@ -559,8 +559,8 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
 
             let opp_color = color.opposite();
 
-            let capture = board.check_capture(&(1<<to), &opp_color);
-            if capture.is_some() {
+            let capture_my = board.check_capture(&(1<<to), &opp_color);
+            if capture_my.is_some() {
                 return Err("Cannot move to field occupied by your own piece!".into())
             }
 
