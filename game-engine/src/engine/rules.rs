@@ -1062,4 +1062,72 @@ mod tests {
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Pawn);
     }
+
+    #[test]
+    fn test_knight_capture_move() {
+        let mut board = generate_board_from_fen(&"8/8/8/3p4/8/4N3/8/8".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "Nxd5".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("e3"));
+        assert_eq!(mov.to, field_to_num("d5"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, Some(Piece::Pawn));
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Knight);
+    }
+
+    #[test]
+    fn test_knight_disambiguation_file() {
+        let mut board = generate_board_from_fen(&"8/8/8/3N4/8/8/8/3N4".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "N5e3".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("d5"));
+        assert_eq!(mov.to, field_to_num("e3"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, None);
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Knight);
+    }
+
+    #[test]
+    fn test_knight_disambiguation_rank() {
+        let mut board = generate_board_from_fen(&"8/8/8/8/2N3N1/8/8/8".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "Nce3".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("c4"));
+        assert_eq!(mov.to, field_to_num("e3"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, None);
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Knight);
+    }
+
+    #[test]
+    fn test_knight_disambiguation_file_and_rank() {
+        let mut board = generate_board_from_fen(&"8/8/8/5N2/8/8/8/3N4".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "Nf5e3".to_string(), &Color::White);
+        assert!(result.is_ok());
+        let mov = result.unwrap();
+        assert_eq!(mov.from, field_to_num("f5"));
+        assert_eq!(mov.to, field_to_num("e3"));
+        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.capture, None);
+        assert_eq!(mov.castling, false);
+        assert_eq!(mov.piece, Piece::Knight);
+    }
+
+    #[test]
+    fn test_knight_nonsensical_move() {
+        let mut board = generate_board_from_fen(&"8/8/8/5N2/8/8/8/3N4".to_string()).unwrap();
+        print_board(&board);
+        let result = string_to_move(&mut board, "Nh1h2".to_string(), &Color::White);
+        assert!(result.is_err());
+    }
 }
