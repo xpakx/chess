@@ -997,4 +997,26 @@ mod tests {
         assert_eq!(get_for_bishop("8/8/2N5/3b4/8/8/8/8", Color::Black), 0x0204280028448201);
         assert_eq!(get_for_bishop("8/5N2/8/3b4/8/8/8/8", Color::Black), 0x8044280028448201);
     }
+
+    #[test]
+    fn test_possible_moves_count() {
+        assert_eq!(get_possible_moves_count("8/8/8/3Q4/8/8/8/8", Color::White), 27);
+        assert_eq!(get_possible_moves_count("8/8/8/8/3q4/8/8/8", Color::Black), 27);
+        assert_eq!(get_possible_moves_count("8/8/8/3R4/8/8/8/8", Color::White), 14);
+        assert_eq!(get_possible_moves_count("8/8/8/8/3r4/8/8/8", Color::Black), 14);
+        assert_eq!(get_possible_moves_count("8/8/8/3B4/8/8/8/8", Color::White), 13);
+        assert_eq!(get_possible_moves_count("8/8/8/8/3b4/8/8/8", Color::Black), 13);
+        assert_eq!(get_possible_moves_count("8/8/8/3N4/8/8/8/8", Color::White), 8);
+        assert_eq!(get_possible_moves_count("8/8/8/8/3n4/8/8/8", Color::Black), 8);
+        assert_eq!(get_possible_moves_count("8/8/8/3K4/8/8/8/8", Color::White), 8);
+        assert_eq!(get_possible_moves_count("8/8/8/8/3k4/8/8/8", Color::Black), 8);
+        assert_eq!(get_possible_moves_count("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", Color::Black), 20);
+        assert_eq!(get_possible_moves_count("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", Color::White), 20);
+    }
+
+    fn get_possible_moves_count(fen: &str, color: Color) -> usize {
+        let board = generate_board_from_fen(&fen.to_string()).unwrap();
+        let moves = get_possible_moves(&board, &color);
+        moves.len()
+    }
 }
