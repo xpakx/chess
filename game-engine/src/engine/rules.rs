@@ -629,27 +629,25 @@ pub fn field_to_num(field: &str) -> u8 {
 fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color: &Color) -> u64 {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
         Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
-                       board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
+                       board.get_white()),
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
-                       board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
+                       board.get_black()),
     };
     let my = pawns | knights | bishops | rooks | queens | king;
     match (piece, capture) {
         (Piece::Pawn, true) => {
             match color {
                 Color::White => {
-                    let empty = !(my|enemy);
-                    let west = get_white_pawn_west_attacks(&pawns, &empty);
+                    let west = get_white_pawn_west_attacks(&pawns, &enemy);
                     let west = (west & (1<<to)) >> 7;
-                    let east = get_white_pawn_east_attacks(&pawns, &empty);
+                    let east = get_white_pawn_east_attacks(&pawns, &enemy);
                     let east = (east & (1<<to)) >> 9;
                     east | west
                 },
                 Color::Black => {
-                    let empty = !(my|enemy);
-                    let west = get_black_pawn_west_attacks(&pawns, &empty);
+                    let west = get_black_pawn_west_attacks(&pawns, &enemy);
                     let west = (west & (1<<to)) << 9;
-                    let east = get_black_pawn_east_attacks(&pawns, &empty);
+                    let east = get_black_pawn_east_attacks(&pawns, &enemy);
                     let east = (east & (1<<to)) << 7;
                     east | west
                 },
