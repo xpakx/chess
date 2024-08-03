@@ -682,15 +682,15 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
             get_knight_moves(&(1<<to), &knights)
         },
         (Piece::Bishop, _) => {
-            get_bishop_moves(&(1<<to), &(enemy|my), &enemy)
+            get_bishop_moves(&(1<<to), &(enemy|my), &enemy) & bishops
         },
         (Piece::Rook, _) => {
-            get_rook_moves(&(1<<to), &(enemy|my), &enemy)
+            get_rook_moves(&(1<<to), &(enemy|my), &enemy) & rooks
         },
         (Piece::Queen, _) => {
             let bishop = get_bishop_moves(&(1<<to), &(enemy|my), &enemy);
             let rook = get_rook_moves(&(1<<to), &(enemy|my), &enemy);
-            bishop | rook
+            (bishop | rook) & queens
         },
         (Piece::King, _) => {
             get_king_moves(&(1<<to), &king)
