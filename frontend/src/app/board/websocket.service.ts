@@ -31,7 +31,7 @@ export class WebsocketService {
   chat$: Observable<ChatEvent> = this.chatSubject.asObservable();
   id?: number;
 
-  constructor() { 
+  constructor() {
     this.apiUrl = environment.apiUrl.replace(/^http/, 'ws');
     if (!this.apiUrl.startsWith("ws")) {
       let frontendUrl = window.location.origin.replace(/^http/, 'ws');
@@ -47,7 +47,7 @@ export class WebsocketService {
     let url = this.apiUrl + "/play/websocket";
     let tokenFromStorage = localStorage.getItem("token");
     let token = tokenFromStorage == null ? "" : tokenFromStorage;
-    
+
     this.rxStomp.configure({
       brokerURL: url,
       connectHeaders: {
@@ -57,10 +57,6 @@ export class WebsocketService {
       heartbeatIncoming: 0,
       heartbeatOutgoing: 20000,
       reconnectDelay: 500,
-
-      debug: (msg: string): void => {
-        console.log(new Date(), msg);
-      },
     });
 
     console.log("activating");
