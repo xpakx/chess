@@ -418,6 +418,7 @@ pub fn game_state(board: &mut BitBoard, color: &Color) -> GameState {
     let mut no_moves = true;
     for mov in moves {
         board.apply_move(&mov, &opp_color);
+        let king = board.get_bitboard_by_piece(&Piece::King, &opp_color);
         let captures = get_capture_map(board, color);
         let no_check = king & captures == 0;
         board.apply_move(&mov, &opp_color);
@@ -700,10 +701,8 @@ fn get_moves_from(board: &BitBoard, piece: &Piece, capture: bool, to: u8, color:
 
 pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
     let (pawns, knights, bishops, rooks, queens, king, enemy) = match color {
-        Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
-                       board.white_pawns | board.white_knights | board.white_bishops | board.white_rooks | board.white_queens | board.white_king),
-        Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
-                       board.black_pawns | board.black_knights | board.black_bishops | board.black_rooks | board.black_queens | board.black_king),
+        Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, board.get_white()),
+        Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king, board.get_black()),
     };
     let friendly = pawns | knights | bishops | rooks | queens | king;
     let all_pieces = friendly | enemy;
@@ -728,7 +727,7 @@ pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
     while current != 0 {
         let from = current.trailing_zeros() as u8;
         let rook = 1 << from;
-        current = current & !rook;
+        current = current ^ rook;
         result |= get_rook_moves(&rook, &all_pieces, &friendly);
     }
 
@@ -736,7 +735,7 @@ pub fn get_capture_map(board: &BitBoard, color: &Color) -> u64 {
     while current != 0 {
         let from = current.trailing_zeros() as u8;
         let bishop = 1 << from;
-        current = current & !bishop;
+        current = current ^ bishop;
         result |= get_bishop_moves(&bishop, &all_pieces, &friendly);
     }
 

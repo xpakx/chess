@@ -25,11 +25,10 @@ impl Engine for RandomEngine {
         let moves = get_possible_moves(board, color);
         let opp_color = color.opposite();
 
-        let king = board.get_king_by_color(color);
-
         let mut moves: Vec<Move> = moves.into_iter().filter(|mv| {
             board.apply_move(mv, color);
             let captures = get_capture_map(board, &opp_color);
+            let king = board.get_king_by_color(color);
             let no_check = king & captures == 0;
             board.apply_move(mv, color);
             no_check
