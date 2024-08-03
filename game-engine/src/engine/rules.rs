@@ -288,19 +288,19 @@ pub fn get_black_pawn_double_pushes(pawns: &u64, empty: &u64) -> u64 {
 }
 
 pub fn get_white_pawn_east_attacks(pawns: &u64, targets: &u64) -> u64 {
-    (pawns << 9) & NOT_A_FILE & targets
+    (pawns << 9) & NOT_H_FILE & targets
 }
 
 pub fn get_white_pawn_west_attacks(pawns: &u64, targets: &u64) -> u64 {
-    (pawns << 7) & NOT_H_FILE & targets
+    (pawns << 7) & NOT_A_FILE & targets
 }
 
 pub fn get_black_pawn_east_attacks(pawns: &u64, targets: &u64) -> u64 {
-    (pawns >> 7) & NOT_A_FILE & targets
+    (pawns >> 7) & NOT_H_FILE & targets
 }
 
 pub fn get_black_pawn_west_attacks(pawns: &u64, targets: &u64) -> u64 {
-    (pawns >> 9) & NOT_H_FILE & targets
+    (pawns >> 9) & NOT_A_FILE & targets
 }
 
 pub fn get_rook_moves(rook: &u64, occupied: &u64, friendly: &u64) -> u64 {
