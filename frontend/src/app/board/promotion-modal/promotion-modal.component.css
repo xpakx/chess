@@ -1,0 +1,47 @@
+.choice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    width: 50px;
+    height: 50px;
+}
+
+.choice.rook.white {
+    background-image: url('/assets/wrook.svg');
+}
+
+.choice.bishop.white {
+    background-image: url('/assets/wbishop.svg');
+}
+
+.choice.knight.white {
+    background-image: url('/assets/wknight.svg');
+}
+
+.choice.queen.white {
+    background-image: url('/assets/wqueen.svg');
+}
+
+.choice.rook.black {
+    background-image: url('/assets/brook.svg');
+}
+
+.choice.bishop.black {
+    background-image: url('/assets/bbishop.svg');
+}
+
+.choice.knight.black {
+    background-image: url('/assets/bknight.svg');
+}
+
+.choice.queen.black {
+    background-image: url('/assets/bqueen.svg');
+}
+
+.choice {
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+

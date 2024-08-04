@@ -38,6 +38,9 @@ export class BoardComponent implements OnInit, OnDestroy {
   dragged?: number[];
   color?: "White" | "Black";
 
+  promotion: boolean = false;
+  promotionMove: string = "";
+
   private moveSub?: Subscription;
   private boardSub?: Subscription;
 
@@ -130,10 +133,38 @@ export class BoardComponent implements OnInit, OnDestroy {
     const targetRank = String.fromCharCode(this.numberToCharCode(end[0]));
 
     const moveString = "".concat(pieceLetter, startFile, startRank, captureString, targetFile, targetRank);
-    this.toast.createToast({id: `drop${i}${j}`, type: "info", message:`move ${moveString}`});
-    this.websocket.makeMove(this._gameId, {move: moveString});
 
     this.dragged = undefined;
+    if(piece == "Pawn" && this.havePromotion(end[0], this.color)) {
+      this.promotion = true;
+      this.promotionMove = moveString;
+      return;
+    }
+
+    this.sendMove(this._gameId, moveString);
+  }
+
+  sendMove(gameId: number, move: String) {
+    this.toast.createToast({id: `drop${move}`, type: "info", message:`move ${move}`});
+    this.websocket.makeMove(gameId, {move});
+  }
+
+  havePromotion(rank: number, color: "White" | "Black"): boolean {
+    if(color == "White") {
+      return rank == 0;
+    }
+    return rank == 7;
+  }
+
+  confirmPromotion(piece: Piece) {
+    if(!this._gameId) {
+      this.promotion = false;
+      return;
+    }
+    const pieceLetter = this.getPieceLetter(piece);
+    const move = this.promotionMove.concat("=", pieceLetter);
+    this.sendMove(this._gameId, move);
+    this.promotion = false;
   }
 
   onDragEnter(event: DragEvent, i: number, j: number) {

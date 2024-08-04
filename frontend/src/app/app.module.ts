@@ -20,6 +20,7 @@ import { AcceptButtonComponent } from './elements/accept-button/accept-button.co
 import { RejectButtonComponent } from './elements/reject-button/reject-button.component';
 import { AvatarComponent } from './elements/avatar/avatar.component';
 import { ErrorInterceptor } from './error/error.interceptor';
+import { PromotionModalComponent } from './board/promotion-modal/promotion-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { ErrorInterceptor } from './error/error.interceptor';
     OpenButtonComponent,
     AcceptButtonComponent,
     RejectButtonComponent,
-    AvatarComponent
+    AvatarComponent,
+    PromotionModalComponent
   ],
   imports: [
     BrowserModule,

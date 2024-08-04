@@ -1,7 +1,7 @@
 <div class="chess-board" [class.inverted]="invert">
     <div class="row" *ngFor="let row of board; index as i">
-        <div *ngFor="let cell of row; index as j" 
-        class="cell" class="{{cell | field}} {{classList[i][j]}}" 
+        <div *ngFor="let cell of row; index as j"
+        class="cell" class="{{cell | field}} {{classList[i][j]}}"
 
         [draggable]="color && cell.startsWith(color)"
         (dragstart)="onDragStart($event, i, j)"
@@ -17,3 +17,5 @@
 
 
 <div class="cell ghost" [class]="ghostClass" #ghost></div>
+
+<app-promotion-modal *ngIf="promotion && color" [color]="color" (choice)="confirmPromotion($event)"></app-promotion-modal>

@@ -1,0 +1,6 @@
+    <div class="modal">
+        <button *ngFor="let choice of choices"
+        class="choice" class="{{choice.image | field}}"
+        (click)=onClick(choice.piece)>
+        </button>
+    </div>
