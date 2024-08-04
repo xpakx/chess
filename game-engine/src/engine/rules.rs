@@ -11,6 +11,8 @@ const NOT_H_FILE: u64 =  0b11111110_11111110_11111110_11111110_11111110_11111110
 const NOT_GH_FILE: u64 = 0b11111100_11111100_11111100_11111100_11111100_11111100_11111100_11111100;
 const RANK_4: u64 =      0b00000000_00000000_00000000_00000000_11111111_00000000_00000000_00000000;
 const RANK_5: u64 =      0b00000000_00000000_00000000_11111111_00000000_00000000_00000000_00000000;
+const WHITE_PROMOTION: u64 =      0b11111111_00000000_00000000_00000000_00000000_00000000_00000000_00000000;
+const BLACK_PROMOTION: u64 =      0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_11111111;
 
 
 const NORTH: usize = 0;
@@ -530,6 +532,22 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
             let to = caps.get(5).map_or(0, |m| field_to_num(m.as_str()));
             let promotion = caps.get(6).map_or(None, |m| Some(letter_to_piece(&m.as_str()[1..])));
             let enpassant = caps.get(7).map_or(false, |_m| true);
+
+            if let Some(promote_to) = promotion {
+                if piece != Piece::Pawn {
+                        return Err("Cannot promote piece".into());
+                }
+                if promote_to == Piece::Pawn || promote_to == Piece::King {
+                        return Err("Cannot promote to this piece".into());
+                }
+                let correct_rank = match color {
+                    Color::White => 1 << to as u8 & WHITE_PROMOTION != 0,
+                    Color::Black => 1 << to as u8  & BLACK_PROMOTION != 0,
+                };
+                if !correct_rank {
+                        return Err("Pawn not on a promotion rank".into());
+                }
+            }
 
             let mut candidates = match (from_file, from_rank) {
                 (Some(file), Some(rank)) => {
