@@ -40,6 +40,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   promotion: boolean = false;
   promotionMove: string = "";
+  promotionStart: number[] = [];
 
   private moveSub?: Subscription;
   private boardSub?: Subscription;
@@ -87,7 +88,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   onDragEnd(event: DragEvent, i: number, j: number) {
-    this.classList[i][j] = "";
+    this.classList[i][j] = this.classList[i][j].replace("dragging", "");
     this.dragged = undefined;
   }
 
@@ -138,6 +139,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     if(piece == "Pawn" && this.havePromotion(end[0], this.color)) {
       this.promotion = true;
       this.promotionMove = moveString;
+      this.promotionStart = start;
+      this.classList[start[0]][start[1]] = "invisible";
       return;
     }
 
@@ -157,6 +160,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   confirmPromotion(piece: Piece) {
+    this.classList[this.promotionStart[0]][this.promotionStart[1]] = "";
     if(!this._gameId) {
       this.promotion = false;
       return;

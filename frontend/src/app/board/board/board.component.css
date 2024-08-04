@@ -109,7 +109,7 @@
     background-size: 100%;
 }
 
-.cell.dragging {
+.cell.dragging, .cell.invisible {
     background-image: none !important;
 }
 
