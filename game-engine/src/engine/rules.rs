@@ -634,7 +634,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 let from = current.trailing_zeros() as u8;
                 let piece_from = 1 << from as u8;
                 current = current & !piece_from;
-                let mov = Move { from, to, promotion: None, capture, castling: false, piece }; // TODO
+                let mov = Move { from, to, promotion, capture, castling: false, piece }; // TODO
                 board.apply_move(&mov, color);
                 let captures = get_capture_map(&board, &opp_color);
                 let king = board.get_king_by_color(color);
@@ -654,7 +654,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
 
             println!("({}) {:?}, from {} to {}, capture: {:?}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
             Ok(Move {
-                from, to, promotion: None, capture, castling: false, piece,
+                from, to, promotion, capture, castling: false, piece,
             })
         },
         None => {
