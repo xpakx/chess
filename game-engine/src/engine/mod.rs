@@ -356,6 +356,10 @@ impl BitBoard {
 
     // TODO: castling, enpassant
     pub fn apply_move(&mut self, mov: &Move, color: &Color) -> () {
+        if let Some(promotion) = mov.promotion {
+            self.apply_promotion(mov, color, &promotion);
+            return;
+        }
         if color == &Color::White {
             match mov.piece {
                 Piece::Pawn => self.white_pawns = self.white_pawns ^ (1<<mov.from | 1<<mov.to),
@@ -395,16 +399,57 @@ impl BitBoard {
         }
     }
 
+    fn apply_promotion(&mut self, mov: &Move, color: &Color, promotion: &Piece) -> () {
+        if color == &Color::White {
+            self.white_pawns = self.white_pawns ^ 1<<mov.from;
+            match promotion {
+                Piece::Knight => self.white_knights = self.white_knights ^ 1<<mov.to,
+                Piece::Bishop => self.white_bishops = self.white_bishops ^ 1<<mov.to,
+                Piece::Rook => self.white_rooks = self.white_rooks ^ 1<<mov.to,
+                Piece::Queen => self.white_queens = self.white_queens ^ 1<<mov.to,
+                _ => {},
+            }
+            match mov.capture {
+                None => {},
+                Some(Piece::Pawn) => self.black_pawns = self.black_pawns ^ 1<<mov.to,
+                Some(Piece::Knight) => self.black_knights = self.black_knights ^ 1<<mov.to,
+                Some(Piece::Bishop) => self.black_bishops = self.black_bishops ^ 1<<mov.to,
+                Some(Piece::Rook) => self.black_rooks = self.black_rooks ^ 1<<mov.to,
+                Some(Piece::Queen) => self.black_queens = self.black_queens ^ 1<<mov.to,
+                Some(Piece::King) => self.black_king = self.black_king ^ 1<<mov.to,
+            }
+        } else {
+            self.black_pawns = self.black_pawns ^ 1<<mov.from;
+            match promotion {
+                Piece::Knight => self.black_knights = self.black_knights ^ 1<<mov.to,
+                Piece::Bishop => self.black_bishops = self.black_bishops ^ 1<<mov.to,
+                Piece::Rook => self.black_rooks = self.black_rooks ^ 1<<mov.to,
+                Piece::Queen => self.black_queens = self.black_queens ^ 1<<mov.to,
+                _ => {},
+            }
+            match mov.capture {
+                None => {},
+                Some(Piece::Pawn) => self.white_pawns = self.white_pawns ^ 1<<mov.to,
+                Some(Piece::Knight) => self.white_knights = self.white_knights ^ 1<<mov.to,
+                Some(Piece::Bishop) => self.white_bishops = self.white_bishops ^ 1<<mov.to,
+                Some(Piece::Rook) => self.white_rooks = self.white_rooks ^ 1<<mov.to,
+                Some(Piece::Queen) => self.white_queens = self.white_queens ^ 1<<mov.to,
+                Some(Piece::King) => self.white_king = self.white_king ^ 1<<mov.to,
+            }
+        }
+    }
+
+
     pub fn get_bitboard_by_piece(&self, piece: &Piece, color: &Color) -> u64 {
         match color {
             Color::Black => match piece {
-                    Piece::Pawn => self.black_pawns,
-                    Piece::Knight => self.black_knights,
-                    Piece::Bishop => self.black_bishops,
-                    Piece::Rook => self.black_rooks,
-                    Piece::Queen => self.black_queens,
-                    Piece::King => self.black_king,
-                }
+                Piece::Pawn => self.black_pawns,
+                Piece::Knight => self.black_knights,
+                Piece::Bishop => self.black_bishops,
+                Piece::Rook => self.black_rooks,
+                Piece::Queen => self.black_queens,
+                Piece::King => self.black_king,
+            }
             ,
             Color::White => match piece {
                 Piece::Pawn => self.white_pawns,
@@ -556,7 +601,7 @@ mod tests {
     fn test_apply_move_no_capture() {
         let fen = "8/8/8/8/8/8/P7/R3K2R w KQ - 0 1".to_string();
         let mut fen_obj = generate_bit_board(&fen).unwrap();
-        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         fen_obj.board.apply_move(&mov, &Color::White);
         assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/3RK2R");
     }
@@ -565,7 +610,7 @@ mod tests {
     fn test_unmove_no_capture() {
         let fen = "8/8/8/8/8/8/P7/R3K2R w KQ - 0 1".to_string();
         let mut fen_obj = generate_bit_board(&fen).unwrap();
-        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         fen_obj.board.apply_move(&mov, &Color::White);
         fen_obj.board.apply_move(&mov, &Color::White);
         assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/R3K2R");
@@ -575,7 +620,7 @@ mod tests {
     fn test_apply_move_capture() {
         let fen = "8/8/8/8/8/8/P7/R2rK2R w KQ - 0 1".to_string();
         let mut fen_obj = generate_bit_board(&fen).unwrap();
-        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         fen_obj.board.apply_move(&mov, &Color::White);
         assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/3RK2R");
     }
@@ -584,7 +629,7 @@ mod tests {
     fn test_unmove_capture() {
         let fen = "8/8/8/8/8/8/P7/R2rK2R w KQ - 0 1".to_string();
         let mut fen_obj = generate_bit_board(&fen).unwrap();
-        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 7, to: 4, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         fen_obj.board.apply_move(&mov, &Color::White);
         fen_obj.board.apply_move(&mov, &Color::White);
         assert_eq!(fen_obj.board.to_fen(), "8/8/8/8/8/8/P7/R2rK2R");
@@ -598,7 +643,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 3, to: 4, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 3, to: 4, piece: Piece::King, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "kq");
     }
@@ -611,7 +656,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "KQ");
     }
@@ -624,7 +669,7 @@ mod tests {
             white_queenside: false,
             white_kingside: false,
         };
-        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 59, to: 60, piece: Piece::King, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "-");
     }
@@ -637,7 +682,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 0, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 0, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "Qkq");
     }
@@ -650,7 +695,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 7, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 7, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "Kkq");
     }
@@ -663,7 +708,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "KQkq");
     }
@@ -677,7 +722,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 56, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 56, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "KQq");
     }
@@ -690,7 +735,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 63, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 63, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "KQk");
     }
@@ -703,7 +748,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: false, castling: false };
+        let mov = Move { from: 5, to: 60, piece: Piece::Rook, capture: None, promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "KQkq");
     }
@@ -716,7 +761,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 60, to: 0, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let mov = Move { from: 60, to: 0, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "Qkq");
     }
@@ -729,7 +774,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 60, to: 7, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let mov = Move { from: 60, to: 7, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::Black);
         assert_eq!(updated_castling.to_fen(), "Kkq");
     }
@@ -742,7 +787,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 60, to: 56, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let mov = Move { from: 60, to: 56, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "KQq");
     }
@@ -755,7 +800,7 @@ mod tests {
             white_queenside: true,
             white_kingside: true,
         };
-        let mov = Move { from: 60, to: 63, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: false, castling: false };
+        let mov = Move { from: 60, to: 63, piece: Piece::Queen, capture: Some(Piece::Rook), promotion: None, castling: false };
         let updated_castling = castling.after_move(&mov, &Color::White);
         assert_eq!(updated_castling.to_fen(), "KQk");
     }

@@ -80,7 +80,7 @@ pub enum Piece {
 pub struct Move {
     pub from: u8,
     pub to: u8,
-    pub promotion: bool,
+    pub promotion: Option<Piece>,
     pub capture: Option<Piece>,
     pub castling: bool,
     pub piece: Piece,
@@ -108,7 +108,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Knight });
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::Knight });
         }
     }
 
@@ -127,7 +127,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece });
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece });
         }
     }
 
@@ -146,7 +146,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let target = 1 << to;
             moves = moves & !target;
             let capture = board.check_capture(&target, color);
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece });
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece });
         }
     }
 
@@ -157,7 +157,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
         let target = 1 << to;
         moves = moves & !target;
         let capture = board.check_capture(&target, color);
-        result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::King });
+        result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::King });
     }
 
     if color == &Color::White {
@@ -167,7 +167,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to - 8;
             let pawn = 1 << to;
             single = single & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO: promotion
+            result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn }); // TODO: promotion
         }
 
         let mut double = get_white_pawn_double_pushes(&pawns, &empty);
@@ -176,7 +176,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to - 16;
             let pawn = 1 << to;
             double = double & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn });
+            result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn });
         }
 
         // TODO: enpassant
@@ -187,7 +187,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let pawn = 1 << to;
             let capture = board.check_capture(&pawn, color);
             east_captures = east_captures & !pawn;
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::Pawn }); // TODO
         }
 
         let mut west_captures = get_white_pawn_west_attacks(&pawns, &enemy);
@@ -197,7 +197,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let pawn = 1 << to;
             let capture = board.check_capture(&pawn, color);
             west_captures = west_captures & !pawn;
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::Pawn }); // TODO
         }
     } else {
         let mut single = get_black_pawn_single_pushes(&pawns, &empty);
@@ -206,7 +206,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to + 8;
             let pawn = 1 << to;
             single = single & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn }); // TODO
         }
 
         let mut double = get_black_pawn_double_pushes(&pawns, &empty);
@@ -215,7 +215,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let from = to + 16;
             let pawn = 1 << to;
             double = double & !pawn;
-            result.push(Move { from, to, promotion: false, capture: None, castling: false, piece: Piece::Pawn });
+            result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn });
         }
 
         // TODO: enpassant
@@ -226,7 +226,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let pawn = 1 << to;
             let capture = board.check_capture(&pawn, color);
             east_captures = east_captures & !pawn;
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::Pawn }); // TODO
         }
 
         let mut west_captures = get_black_pawn_west_attacks(&pawns, &enemy);
@@ -236,7 +236,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let pawn = 1 << to;
             let capture = board.check_capture(&pawn, color);
             west_captures = west_captures & !pawn;
-            result.push(Move { from, to, promotion: false, capture, castling: false, piece: Piece::Pawn }); // TODO
+            result.push(Move { from, to, promotion: None, capture, castling: false, piece: Piece::Pawn }); // TODO
         }
     }
     // TODO: castling
@@ -592,7 +592,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
                 let from = current.trailing_zeros() as u8;
                 let piece_from = 1 << from as u8;
                 current = current & !piece_from;
-                let mov = Move { from, to, promotion: false, capture, castling: false, piece }; // TODO
+                let mov = Move { from, to, promotion: None, capture, castling: false, piece }; // TODO
                 board.apply_move(&mov, color);
                 let captures = get_capture_map(&board, &opp_color);
                 let king = board.get_king_by_color(color);
@@ -612,7 +612,7 @@ pub fn string_to_move(board: &mut BitBoard, mov: String, color: &Color) -> Resul
 
             println!("({}) {:?}, from {} to {}, capture: {:?}, promotion: {:?}, enpassant: {}", mov, piece, from, to, capture, promotion, enpassant);
             Ok(Move {
-                from, to, promotion: false, capture, castling: false, piece,
+                from, to, promotion: None, capture, castling: false, piece,
             })
         },
         None => {
@@ -1049,7 +1049,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("e2"));
         assert_eq!(mov.to, field_to_num("e4"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, None);
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Pawn);
@@ -1064,7 +1064,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("g1"));
         assert_eq!(mov.to, field_to_num("e2"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, None);
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Knight);
@@ -1079,7 +1079,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("e5"));
         assert_eq!(mov.to, field_to_num("d6"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, Some(Piece::Pawn));
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Pawn);
@@ -1094,7 +1094,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("e3"));
         assert_eq!(mov.to, field_to_num("d5"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, Some(Piece::Pawn));
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Knight);
@@ -1109,7 +1109,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("d5"));
         assert_eq!(mov.to, field_to_num("e3"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, None);
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Knight);
@@ -1124,7 +1124,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("c4"));
         assert_eq!(mov.to, field_to_num("e3"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, None);
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Knight);
@@ -1139,7 +1139,7 @@ mod tests {
         let mov = result.unwrap();
         assert_eq!(mov.from, field_to_num("f5"));
         assert_eq!(mov.to, field_to_num("e3"));
-        assert_eq!(mov.promotion, false);
+        assert_eq!(mov.promotion, None);
         assert_eq!(mov.capture, None);
         assert_eq!(mov.castling, false);
         assert_eq!(mov.piece, Piece::Knight);
