@@ -528,7 +528,10 @@ pub fn move_to_string(board: &mut BitBoard, mov: &Move, color: &Color, check: bo
     move_str.push(num_to_file(mov.to));
     move_str.push(num_to_rank(mov.to));
 
-    // TODO: add promotion (=[QRBN])
+    if let Some(promotion) = mov.promotion {
+        move_str.push('=');
+        move_str.push(piece_to_letter(promotion));
+    }
    
     if check & !checkmate {
         move_str.push('+');
