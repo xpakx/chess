@@ -1197,4 +1197,65 @@ mod tests {
         let result = string_to_move(&mut board, "Nh1h2".to_string(), &Color::White);
         assert!(result.is_err());
     }
+
+    fn perft(depth: usize, board: &mut BitBoard, color: &Color) -> usize {
+        if depth == 0 {
+            return 1;
+        }
+        let mut nodes = 0;
+        let moves = get_possible_moves(&board, &color);
+        let opp_color = color.opposite();
+        for mov in moves {
+            board.apply_move(&mov, color);
+            let captures = get_capture_map(board, &opp_color);
+            let king = board.get_king_by_color(color);
+            let no_check = king & captures == 0;
+            if no_check {
+                nodes += perft(depth-1, board, &opp_color);
+            }
+            board.apply_move(&mov, color);
+        }
+        return nodes;
+    }
+
+    #[test]
+    fn test_perft1_for_initial_position() {
+        let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
+        let perft = perft(1, &mut board, &Color::White);
+        let target = 20;
+        assert_eq!(perft, target, "perft1 should be {}, but is {}", target, perft);
+    }
+
+    #[test]
+    fn test_perft2_for_initial_position() {
+        let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
+        let perft = perft(2, &mut board, &Color::White);
+        let target = 400;
+        assert_eq!(perft, target, "perft2 should be {}, but is {}", target, perft);
+    }
+
+    #[test]
+    fn test_perft3_for_initial_position() {
+        let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
+        let perft = perft(3, &mut board, &Color::White);
+        let target = 8902;
+        assert_eq!(perft, target, "perft3 should be {}, but is {}", target, perft);
+    }
+
+    #[test]
+    fn test_perft4_for_initial_position() {
+        let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
+        let perft = perft(4, &mut board, &Color::White);
+        let target = 197281;
+        assert_eq!(perft, target, "perft4 should be {}, but is {}", target, perft);
+    }
+
+    #[test]
+    #[ignore = "enpassant is not yet implemented"]
+    fn test_perft5_for_initial_position() {
+        let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
+        let perft = perft(5, &mut board, &Color::White);
+        let target = 4865609 ;
+        assert_eq!(perft, target, "perft5 should be {}, but is {}", target, perft);
+    }
 }
