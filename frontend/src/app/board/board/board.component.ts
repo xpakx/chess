@@ -123,12 +123,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     let candidates = this.findCandidates(start, end, this.color, piece, capture);
-    const sameFile = candidates.find((a) => a[0] == start[0] && a[1] != start[1]);
-    const sameRank = candidates.find((a) => a[1] == start[1] && a[0] != start[0]);
+    const notAllHaveSameFile = candidates.find((a) => a[1] != start[1]);
+    const notAllHaveSameRank = candidates.find((a) => a[0] != start[0]);
 
     const pieceLetter = this.getPieceLetter(piece);
-    const startFile = sameFile ? String.fromCharCode(this.letterToCharCode(start[1])) : "";
-    const startRank = sameRank ? String.fromCharCode(this.numberToCharCode(start[0])) : "";
+    // TODO: usually one is enough
+    const startFile = notAllHaveSameFile ? String.fromCharCode(this.letterToCharCode(start[1])) : "";
+    const startRank = notAllHaveSameRank ? String.fromCharCode(this.numberToCharCode(start[0])) : "";
     const captureString = capture ? "x" : "";
     const targetFile = String.fromCharCode(this.letterToCharCode(end[1]));
     const targetRank = String.fromCharCode(this.numberToCharCode(end[0]));
