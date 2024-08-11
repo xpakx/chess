@@ -89,9 +89,9 @@ pub struct Move {
 pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
     let (pawns, knights, bishops, rooks, queens, king, enemy, promotion_rank) = match color {
         Color::Black => (board.black_pawns, board.black_knights, board.black_bishops, board.black_rooks, board.black_queens, board.black_king, 
-                       board.get_white(), WHITE_PROMOTION), 
+                       board.get_white(), BLACK_PROMOTION), 
         Color::White => (board.white_pawns, board.white_knights, board.white_bishops, board.white_rooks, board.white_queens, board.white_king,
-                       board.get_black(), BLACK_PROMOTION),
+                       board.get_black(), WHITE_PROMOTION),
     };
     let mut result = Vec::new();
     let mut current = knights;
@@ -228,7 +228,7 @@ pub fn get_possible_moves(board: &BitBoard, color: &Color) -> Vec<Move> {
             let pawn = 1 << to;
             single = single & !pawn;
             if pawn & promotion_rank == 0 {
-                result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn }); // TODO: promotion
+                result.push(Move { from, to, promotion: None, capture: None, castling: false, piece: Piece::Pawn });
             } else {
                 result.push(Move { from, to, promotion: Some(Piece::Knight), capture: None, castling: false, piece: Piece::Pawn });
                 result.push(Move { from, to, promotion: Some(Piece::Bishop), capture: None, castling: false, piece: Piece::Pawn });
