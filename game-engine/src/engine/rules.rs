@@ -1218,6 +1218,29 @@ mod tests {
         return nodes;
     }
 
+    fn perft_divide(depth: usize, board: &mut BitBoard, color: &Color) -> usize {
+        assert!(depth > 0);
+        let mut nodes = 0;
+        let moves = get_possible_moves(board, color);
+        let opp_color = color.opposite();
+
+        for mov in moves {
+            board.apply_move(&mov, color);
+            let captures = get_capture_map(board, &opp_color);
+            let king = board.get_king_by_color(color);
+            let no_check = king & captures == 0;
+            if no_check {
+                let curr = perft(depth-1, board, &opp_color);
+                nodes += curr;
+                let from = format!("{}{}", num_to_file(mov.from), num_to_rank(mov.from));
+                let to = format!("{}{}", num_to_file(mov.to), num_to_rank(mov.to));
+                println!("Move: {}{}, Nodes: {}", from, to, curr);
+            }
+            board.apply_move(&mov, color);
+        }
+        return nodes;
+    }
+
     #[test]
     fn test_perft1_for_initial_position() {
         let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
@@ -1245,7 +1268,7 @@ mod tests {
     #[test]
     fn test_perft4_for_initial_position() {
         let mut board = generate_board_from_fen(&"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string()).unwrap();
-        let perft = perft(4, &mut board, &Color::White);
+        let perft = perft_divide(4, &mut board, &Color::White);
         let target = 197281;
         assert_eq!(perft, target, "perft4 should be {}, but is {}", target, perft);
     }
